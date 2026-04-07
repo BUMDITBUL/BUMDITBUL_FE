@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Input from '@/components/ui/Input';
+import Button from '@/components/ui/Button'
 
 export default function FindPasswordForm() {
   const [email, setEmail] = useState('');
@@ -17,7 +18,6 @@ export default function FindPasswordForm() {
     }
     setEmailError('');
     setCodeSent(true);
-    setCodeError('');
   };
 
   const handleVerifyCode = () => {
@@ -26,6 +26,7 @@ export default function FindPasswordForm() {
       return;
     }
     setCodeError('');
+    // 백엔드 연동 시 인증번호 확인 API 호출
   };
 
   return (
@@ -43,35 +44,16 @@ export default function FindPasswordForm() {
 
       {/* 폼 */}
       <div className="flex flex-col gap-3">
-        {/* 이메일 */}
-        <div className="flex flex-col gap-1">
-          <Input
-            type="email"
-            placeholder="이메일을 입력해주세요."
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setEmailError('');
-            }}
-            error={!!emailError}
-          />
-          {emailError && (
-            <p className="text-xs text-red-400">{emailError}</p>
-          )}
-        </div>
-
-        {/* 인증번호 */}
+        {/* 이메일 + 전송 버튼 */}
         <div className="flex flex-col gap-1">
           <div className="flex gap-2">
             <div className="flex-1">
               <Input
-                placeholder="인증번호를 입력해주세요."
-                value={code}
-                onChange={(e) => {
-                  setCode(e.target.value);
-                  setCodeError('');
-                }}
-                error={!!codeError}
+                type="email"
+                placeholder="이메일을 입력해주세요."
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setEmailError(''); }}
+                error={!!emailError}
               />
             </div>
             <button
@@ -84,15 +66,38 @@ export default function FindPasswordForm() {
                 borderRadius: "14px",
               }}
             >
+              전송
+            </button>
+          </div>
+          {emailError && <p className="text-xs text-red-400">{emailError}</p>}
+          {codeSent && <p className="text-xs text-white/55">입력하신 이메일로 인증코드를 전송했어요.</p>}
+        </div>
+
+        {/* 인증번호 + 확인 버튼 */}
+        <div className="flex flex-col gap-1">
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Input
+                placeholder="인증번호를 입력해주세요."
+                value={code}
+                onChange={(e) => { setCode(e.target.value); setCodeError(''); }}
+                error={!!codeError}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleVerifyCode}
+              className="shrink-0 px-6 text-white/55 text-sm transition-colors hover:bg-white/5"
+              style={{
+                height: "46px",
+                border: "1px solid rgba(255, 255, 255, 0.55)",
+                borderRadius: "14px",
+              }}
+            >
               확인
             </button>
           </div>
-          {codeSent && !codeError && (
-            <p className="text-xs text-white/55">입력하신 이메일로 인증코드를 전송했어요.</p>
-          )}
-          {codeError && (
-            <p className="text-xs text-red-400">{codeError}</p>
-          )}
+          {codeError && <p className="text-xs text-red-400">{codeError}</p>}
         </div>
       </div>
 
