@@ -1,0 +1,30 @@
+@import url('https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.1/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css');
+@import "tailwindcss";
+
+@theme {
+  --color-brand-black-900: #212121;
+  --color-brand-black-800: #424242;
+  --color-brand-black-700: #616161;
+  --color-brand-black-600: #757575;
+  --color-brand-black-500: #9E9E9E;
+  --color-brand-black-400: #BDBDBD;
+  --color-brand-black-300: #E0E0E0;
+  --color-brand-black-200: #EEEEEE;
+  --color-brand-black-100: #F5F5F5;
+  --color-brand-black-50: #FAFAFA;
+
+  --color-brand-green-900: #1B5E20;
+  --color-brand-green-800: #2E7D32;
+  --color-brand-green-700: #388E3C;
+  --color-brand-green-600: #43A047;
+  --color-brand-green-500: #4CAF50;
+  --color-brand-green-400: #66BB6A;
+  --color-brand-green-300: #81C784;
+  --color-brand-green-200: #A5D6A7;
+  --color-brand-green-100: #C8E6C9;
+  --color-brand-green-50: #E8F5E9;
+}
+
+* {
+  font-family: 'Wanted Sans Variable', 'Wanted Sans', sans-serif;
+}
