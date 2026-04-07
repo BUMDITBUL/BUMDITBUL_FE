@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { useState } from 'react';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
+import { useState } from "react";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,8 +17,10 @@ export default function LoginForm() {
           <p className="text-sm leading-relaxed text-brand-black-500">
             범딧불은 언제나 공부에 열중하시는
             <br />
-            여러분들을 <span className="text-brand-green-200">응원</span>하고,{" "}
-            <span className="text-brand-green-200">환영</span>합니다.
+            여러분들을 <span className="text-brand-green-200">
+              응원
+            </span>하고, <span className="text-brand-green-200">환영</span>
+            합니다.
           </p>
         </div>
       </div>
@@ -30,16 +32,25 @@ export default function LoginForm() {
           type={showPassword ? "text" : "password"}
           placeholder="비밀번호를 입력해주세요."
           rightElement={
-            <button type="button" onClick={() => setShowPassword(!showPassword)}>
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+            >
               <img
-                src={showPassword ? "/images/icon/open-eyes.svg" : "/images/icon/close-eyes.svg"}
+                src={
+                  showPassword
+                    ? "/images/icon/open-eyes.svg"
+                    : "/images/icon/close-eyes.svg"
+                }
                 alt={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
                 className="w-5 h-5 opacity-55"
               />
             </button>
           }
         />
-        <Button type="submit" variant="primary">로그인</Button>
+        <Button type="submit" variant="primary">
+          로그인
+        </Button>
       </div>
 
       {/* SNS 로그인 */}
@@ -51,11 +62,19 @@ export default function LoginForm() {
         </div>
         <div className="flex gap-3">
           <Button variant="outline" fullWidth={false}>
-            <img src="/images/google.svg" alt="Google" className="w-4 h-4 opacity-55" />
+            <img
+              src="/images/google.svg"
+              alt="Google"
+              className="w-4 h-4 opacity-55"
+            />
             Google
           </Button>
           <Button variant="outline" fullWidth={false}>
-            <img src="/images/apple.svg" alt="Apple" className="w-4 h-4 opacity-55" />
+            <img
+              src="/images/apple.svg"
+              alt="Apple"
+              className="w-4 h-4 opacity-55"
+            />
             Apple
           </Button>
         </div>
