@@ -27,7 +27,9 @@ export default function Input({
           height: "46px",
           padding: "14px",
           paddingRight: rightElement ? "48px" : "14px",
-          border: error ? "1px solid #f87171" : "1px solid rgba(255, 255, 255, 0.55)",
+          border: error
+            ? "1px solid var(--color-brand-error)"
+            : "1px solid rgba(255, 255, 255, 0.55)",
           borderRadius: "14px",
         }}
       />
