@@ -63,7 +63,7 @@ export default function LoginForm() {
 
       {/* 하단 링크 */}
       <div className="flex flex-col gap-1">
-        <a href="#" className="text-sm underline text-white">
+        <a href="/find-password" className="text-sm underline text-white">
           비밀번호를 잊어 버리셨나요?
         </a>
         <p className="text-sm text-white/55">

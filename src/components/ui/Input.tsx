@@ -4,6 +4,7 @@ interface InputProps {
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   rightElement?: React.ReactNode;
+  error?: boolean;
 }
 
 export default function Input({
@@ -12,6 +13,7 @@ export default function Input({
   value,
   onChange,
   rightElement,
+  error = false,
 }: InputProps) {
   return (
     <div className="relative">
@@ -25,7 +27,7 @@ export default function Input({
           height: "46px",
           padding: "14px",
           paddingRight: rightElement ? "48px" : "14px",
-          border: "1px solid rgba(255, 255, 255, 0.55)",
+          border: error ? "1px solid #f87171" : "1px solid rgba(255, 255, 255, 0.55)",
           borderRadius: "14px",
         }}
       />
