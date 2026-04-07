@@ -65,85 +65,97 @@ export default function SignupForm() {
       </div>
 
       {/* 폼 */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         {/* 이메일 */}
-        <Input
-          type="email"
-          placeholder="이메일을 입력해주세요."
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        {/* 비밀번호 */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-2">
+          <label className="text-white text-sm font-medium">이메일</label>
           <Input
-            type={showPassword ? "text" : "password"}
-            placeholder="비밀번호를 입력해주세요."
-            value={password}
-            onChange={(e) => { setPassword(e.target.value); setPasswordError(''); }}
-            error={!!passwordError}
-            rightElement={
-              <button type="button" onClick={() => setShowPassword(!showPassword)}>
-                <img
-                  src={showPassword ? "/images/icon/open-eyes.svg" : "/images/icon/close-eyes.svg"}
-                  alt={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
-                  className="w-5 h-5 opacity-55"
-                />
-              </button>
-            }
+            type="email"
+            placeholder="이메일을 입력해주세요."
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
-          {passwordError && <p className="text-xs text-red-400">비밀번호는 8자 이상, 특수문자를 포함해야 합니다.</p>}
-        </div>
-
-        {/* 비밀번호 확인 */}
-        <div className="flex flex-col gap-1">
-          <Input
-            type={showPasswordConfirm ? "text" : "password"}
-            placeholder="비밀번호를 다시 입력해주세요."
-            value={passwordConfirm}
-            onChange={(e) => { setPasswordConfirm(e.target.value); setPasswordConfirmError(''); }}
-            error={!!passwordConfirmError}
-            rightElement={
-              <button type="button" onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}>
-                <img
-                  src={showPasswordConfirm ? "/images/icon/open-eyes.svg" : "/images/icon/close-eyes.svg"}
-                  alt={showPasswordConfirm ? "비밀번호 숨기기" : "비밀번호 보기"}
-                  className="w-5 h-5 opacity-55"
-                />
-              </button>
-            }
-          />
-          {passwordConfirmError && <p className="text-xs text-red-400">{passwordConfirmError}</p>}
         </div>
 
         {/* 인증번호 */}
-        <div className="flex flex-col gap-1">
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <Input
-                placeholder="인증번호를 입력해주세요."
-                value={code}
-                onChange={(e) => { setCode(e.target.value); setCodeError(''); }}
-                error={!!codeError}
-              />
+        <div className="flex flex-col gap-2">
+          <label className="text-white text-sm font-medium">인증번호</label>
+          <div className="flex flex-col gap-1">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Input
+                  placeholder="인증번호를 입력해주세요."
+                  value={code}
+                  onChange={(e) => { setCode(e.target.value); setCodeError(''); }}
+                  error={!!codeError}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleSendCode}
+                className="shrink-0 px-5 text-white/55 text-sm transition-colors hover:bg-white/5"
+                style={{
+                  height: "46px",
+                  border: "1px solid rgba(255, 255, 255, 0.55)",
+                  borderRadius: "14px",
+                }}
+              >
+                확인
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={handleSendCode}
-              className="shrink-0 px-8 text-white/55 text-sm transition-colors hover:bg-white/5"
-              style={{
-                height: "46px",
-                border: "1px solid rgba(255, 255, 255, 0.55)",
-                borderRadius: "14px",
-              }}
-            >
-              확인
-            </button>
+            {codeSent && !codeError && (
+              <p className="text-xs text-white/55">입력하신 이메일로 인증번호를 전송했어요.</p>
+            )}
+            {codeError && <p className="text-xs text-brand-error">{codeError}</p>}
           </div>
-          {codeSent && !codeError && (
-            <p className="text-xs text-white/55">입력하신 이메일로 인증번호를 전송했어요.</p>
-          )}
-          {codeError && <p className="text-xs text-red-400">{codeError}</p>}
+        </div>
+
+        {/* 비밀번호 */}
+        <div className="flex flex-col gap-2">
+          <label className="text-white text-sm font-medium">비밀번호</label>
+          <div className="flex flex-col gap-1">
+            <Input
+              type={showPassword ? "text" : "password"}
+              placeholder="8자 이상 특수문자를 포함하여 입력"
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setPasswordError(''); }}
+              error={!!passwordError}
+              rightElement={
+                <button type="button" onClick={() => setShowPassword(!showPassword)}>
+                  <img
+                    src={showPassword ? "/images/icon/open-eyes.svg" : "/images/icon/close-eyes.svg"}
+                    alt={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
+                    className="w-5 h-5 opacity-55"
+                  />
+                </button>
+              }
+            />
+            {passwordError && <p className="text-xs text-brand-error">비밀번호는 8자 이상, 특수문자를 포함해야 합니다.</p>}
+          </div>
+        </div>
+
+        {/* 비밀번호 확인 */}
+        <div className="flex flex-col gap-2">
+          <label className="text-white text-sm font-medium">비밀번호 확인</label>
+          <div className="flex flex-col gap-1">
+            <Input
+              type={showPasswordConfirm ? "text" : "password"}
+              placeholder="8자 이상 특수문자를 포함하여 입력"
+              value={passwordConfirm}
+              onChange={(e) => { setPasswordConfirm(e.target.value); setPasswordConfirmError(''); }}
+              error={!!passwordConfirmError}
+              rightElement={
+                <button type="button" onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}>
+                  <img
+                    src={showPasswordConfirm ? "/images/icon/open-eyes.svg" : "/images/icon/close-eyes.svg"}
+                    alt={showPasswordConfirm ? "비밀번호 숨기기" : "비밀번호 보기"}
+                    className="w-5 h-5 opacity-55"
+                  />
+                </button>
+              }
+            />
+            {passwordConfirmError && <p className="text-xs text-brand-error">{passwordConfirmError}</p>}
+          </div>
         </div>
 
         <Button type="submit" variant="primary" onClick={handleSubmit}>회원가입</Button>
