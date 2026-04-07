@@ -42,7 +42,7 @@ export default function AuthLayout({
 
         {/* 우측: 폼 카드 */}
         <div className="w-1/2 flex items-center justify-center px-20 bg-brand-black-900">
-          <div className="w-full max-w-[480px]">
+          <div className="w-full max-w-[480px]" style={{ zoom: 0.9 }}>
             {children}
           </div>
         </div>
