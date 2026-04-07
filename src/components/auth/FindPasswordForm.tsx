@@ -26,8 +26,14 @@ export default function FindPasswordForm() {
       return;
     }
     setCodeError('');
-    // 백엔드 연동 시 인증번호 확인 API 호출
   };
+
+  const ErrorMessage = ({ message }: { message: string }) => (
+    <div className="flex items-center gap-1">
+      <img src="/images/icon/error.svg" alt="에러" className="w-4 h-4" />
+      <p className="text-xs text-brand-error">{message}</p>
+    </div>
+  );
 
   return (
     <div className="w-full flex flex-col gap-6">
@@ -43,61 +49,67 @@ export default function FindPasswordForm() {
       </div>
 
       {/* 폼 */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         {/* 이메일 + 전송 버튼 */}
-        <div className="flex flex-col gap-1">
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <Input
-                type="email"
-                placeholder="이메일을 입력해주세요."
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); setEmailError(''); }}
-                error={!!emailError}
-              />
+        <div className="flex flex-col gap-2">
+          <label className="text-white/55 text-sm font-medium">이메일</label>
+          <div className="flex flex-col gap-1">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Input
+                  type="email"
+                  placeholder="이메일을 입력해주세요."
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setEmailError(''); }}
+                  error={!!emailError}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleSendCode}
+                className="shrink-0 px-6 text-white/55 text-sm transition-colors hover:bg-white/5"
+                style={{
+                  height: "46px",
+                  border: "1px solid rgba(255, 255, 255, 0.55)",
+                  borderRadius: "14px",
+                }}
+              >
+                전송
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={handleSendCode}
-              className="shrink-0 px-6 text-white/55 text-sm transition-colors hover:bg-white/5"
-              style={{
-                height: "46px",
-                border: "1px solid rgba(255, 255, 255, 0.55)",
-                borderRadius: "14px",
-              }}
-            >
-              전송
-            </button>
+            {emailError && <ErrorMessage message={emailError} />}
+            {codeSent && <p className="text-xs text-white/55">입력하신 이메일로 인증코드를 전송했어요.</p>}
           </div>
-          {emailError && <p className="text-xs text-red-400">{emailError}</p>}
-          {codeSent && <p className="text-xs text-white/55">입력하신 이메일로 인증코드를 전송했어요.</p>}
         </div>
 
         {/* 인증번호 + 확인 버튼 */}
-        <div className="flex flex-col gap-1">
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <Input
-                placeholder="인증번호를 입력해주세요."
-                value={code}
-                onChange={(e) => { setCode(e.target.value); setCodeError(''); }}
-                error={!!codeError}
-              />
+        <div className="flex flex-col gap-2">
+          <label className="text-white/55 text-sm font-medium">인증번호</label>
+          <div className="flex flex-col gap-1">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Input
+                  placeholder="인증번호를 입력해주세요."
+                  value={code}
+                  onChange={(e) => { setCode(e.target.value); setCodeError(''); }}
+                  error={!!codeError}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleVerifyCode}
+                className="shrink-0 px-6 text-white/55 text-sm transition-colors hover:bg-white/5"
+                style={{
+                  height: "46px",
+                  border: "1px solid rgba(255, 255, 255, 0.55)",
+                  borderRadius: "14px",
+                }}
+              >
+                확인
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={handleVerifyCode}
-              className="shrink-0 px-6 text-white/55 text-sm transition-colors hover:bg-white/5"
-              style={{
-                height: "46px",
-                border: "1px solid rgba(255, 255, 255, 0.55)",
-                borderRadius: "14px",
-              }}
-            >
-              확인
-            </button>
+            {codeError && <ErrorMessage message={codeError} />}
           </div>
-          {codeError && <p className="text-xs text-red-400">{codeError}</p>}
         </div>
       </div>
 

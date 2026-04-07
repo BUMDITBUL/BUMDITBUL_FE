@@ -38,7 +38,7 @@ export default function LoginForm() {
       <div className="flex flex-col gap-4">
         {/* 이메일 */}
         <div className="flex flex-col gap-2">
-          <label className="text-white text-sm font-medium">이메일</label>
+          <label className="text-white/55 text-sm font-medium">이메일</label>
           <Input
             type="email"
             placeholder="이메일 입력"
@@ -50,7 +50,7 @@ export default function LoginForm() {
 
         {/* 비밀번호 */}
         <div className="flex flex-col gap-2">
-          <label className="text-white text-sm font-medium">비밀번호</label>
+          <label className="text-white/55 text-sm font-medium">비밀번호</label>
           <Input
             type={showPassword ? "text" : "password"}
             placeholder="비밀번호 입력"

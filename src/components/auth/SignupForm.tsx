@@ -48,6 +48,13 @@ export default function SignupForm() {
     if (hasError) return;
   };
 
+  const ErrorMessage = ({ message }: { message: string }) => (
+    <div className="flex items-center gap-1">
+      <img src="/images/icon/error.svg" alt="에러" className="w-4 h-4" />
+      <p className="text-xs text-brand-error">{message}</p>
+    </div>
+  );
+
   return (
     <div className="w-full flex flex-col gap-6">
       {/* 로고 + 타이틀 */}
@@ -68,7 +75,7 @@ export default function SignupForm() {
       <div className="flex flex-col gap-4">
         {/* 이메일 */}
         <div className="flex flex-col gap-2">
-          <label className="text-white text-sm font-medium">이메일</label>
+          <label className="text-white/55 text-sm font-medium">이메일</label>
           <Input
             type="email"
             placeholder="이메일을 입력해주세요."
@@ -79,7 +86,7 @@ export default function SignupForm() {
 
         {/* 인증번호 */}
         <div className="flex flex-col gap-2">
-          <label className="text-white text-sm font-medium">인증번호</label>
+          <label className="text-white/55 text-sm font-medium">인증번호</label>
           <div className="flex flex-col gap-1">
             <div className="flex gap-2">
               <div className="flex-1">
@@ -106,13 +113,13 @@ export default function SignupForm() {
             {codeSent && !codeError && (
               <p className="text-xs text-white/55">입력하신 이메일로 인증번호를 전송했어요.</p>
             )}
-            {codeError && <p className="text-xs text-brand-error">{codeError}</p>}
+            {codeError && <ErrorMessage message={codeError} />}
           </div>
         </div>
 
         {/* 비밀번호 */}
         <div className="flex flex-col gap-2">
-          <label className="text-white text-sm font-medium">비밀번호</label>
+          <label className="text-white/55 text-sm font-medium">비밀번호</label>
           <div className="flex flex-col gap-1">
             <Input
               type={showPassword ? "text" : "password"}
@@ -130,13 +137,13 @@ export default function SignupForm() {
                 </button>
               }
             />
-            {passwordError && <p className="text-xs text-brand-error">비밀번호는 8자 이상, 특수문자를 포함해야 합니다.</p>}
+            {passwordError && <ErrorMessage message="비밀번호는 8자 이상, 특수문자를 포함해야 합니다." />}
           </div>
         </div>
 
         {/* 비밀번호 확인 */}
         <div className="flex flex-col gap-2">
-          <label className="text-white text-sm font-medium">비밀번호 확인</label>
+          <label className="text-white/55 text-sm font-medium">비밀번호 확인</label>
           <div className="flex flex-col gap-1">
             <Input
               type={showPasswordConfirm ? "text" : "password"}
@@ -154,7 +161,7 @@ export default function SignupForm() {
                 </button>
               }
             />
-            {passwordConfirmError && <p className="text-xs text-brand-error">{passwordConfirmError}</p>}
+            {passwordConfirmError && <ErrorMessage message={passwordConfirmError} />}
           </div>
         </div>
 
