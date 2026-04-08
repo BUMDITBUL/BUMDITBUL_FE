@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import Button from "@/components/ui/Button";
 
-const DEFAULT_SUBJECTS = ["ex)국어", "ex)수학"];
+const DEFAULT_SUBJECTS = [""];
 const DEFAULT_SET = new Set(DEFAULT_SUBJECTS);
 
 const MAX_SUBJECTS = 9;
