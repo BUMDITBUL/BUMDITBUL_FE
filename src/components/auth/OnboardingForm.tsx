@@ -49,6 +49,7 @@ export default function OnboardingForm() {
       <div className="flex flex-col gap-5">
         {/* 닉네임 */}
         <div className="flex flex-col gap-2">
+          <label className="text-white/55 text-sm font-medium">닉네임</label>
           <Input
             placeholder="닉네임을 입력해주세요."
             value={nickname}
@@ -71,8 +72,9 @@ export default function OnboardingForm() {
 
         {/* 학교 + 학교급 */}
         <div className="flex flex-col gap-2">
-          <div className="flex gap-2">
-            <div className="flex-1">
+          <label className="text-white/55 text-sm font-medium">학교</label>
+          <div className="flex gap-2 items-start">
+            <div className="flex-1 min-w-0">
               <Input
                 placeholder="교명을 입력해주세요."
                 value={school}
@@ -128,7 +130,7 @@ export default function OnboardingForm() {
             </div>
           </div>
           <p className="text-xs text-white/40 pl-[14px]">
-            시험당일 재학생분들의 시험을 '응원해드려요.{" "}
+            시험당일 재학생분들의 시험을 응원해드려요.{" "}
             <span className="text-brand-green-200">(필수 X)</span>
           </p>
         </div>
