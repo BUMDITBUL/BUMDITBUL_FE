@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import Button from "@/components/ui/Button";
 
-const DEFAULT_SUBJECTS = ["국어", "수학", "과학"];
+const DEFAULT_SUBJECTS = ["ex)국어", "ex)수학"];
 const DEFAULT_SET = new Set(DEFAULT_SUBJECTS);
 
 const MAX_SUBJECTS = 9;
@@ -31,22 +31,19 @@ export default function OnboardingStep2Form() {
   );
 
   const [maxReached, setMaxReached] = useState(false);
+  const [duplicateError, setDuplicateError] = useState(false);
   const [removingId, setRemovingId] = useState<number | null>(null);
   const [isPressingUI, setIsPressingUI] = useState(false);
   const [focusedId, setFocusedId] = useState<number | null>(null);
 
   const [inputWidths, setInputWidths] = useState<Record<number, number>>(
     Object.fromEntries(
-      DEFAULT_SUBJECTS.map((name, i) => [
-        i,
-        Math.max(72, name.length * 18 + 28),
-      ])
+      DEFAULT_SUBJECTS.map((name, i) => [i, Math.max(72, name.length * 18 + 28)])
     )
   );
 
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const isLongPress = useRef(false);
-
   const inputRefs = useRef<Record<number, HTMLInputElement | null>>({});
   const prevNames = useRef<Record<number, string>>(
     Object.fromEntries(DEFAULT_SUBJECTS.map((name, i) => [i, name]))
@@ -57,10 +54,7 @@ export default function OnboardingStep2Form() {
   const getTextWidth = (text: string) => Math.max(72, text.length * 18 + 28);
 
   const updateWidth = (id: number, value: string) => {
-    setInputWidths((prev) => ({
-      ...prev,
-      [id]: getTextWidth(value),
-    }));
+    setInputWidths((prev) => ({ ...prev, [id]: getTextWidth(value) }));
   };
 
   const handleNameBlur = (index: number) => {
@@ -69,12 +63,21 @@ export default function OnboardingStep2Form() {
 
     if (value !== undefined) {
       const newName = value || prevNames.current[id];
+
+      // 중복 체크
+      const isDuplicate = subjects.some((s, i) => i !== index && s.name === newName && newName !== '');
+      if (isDuplicate) {
+        setDuplicateError(true);
+        inputRefs.current[id]!.value = prevNames.current[id];
+        updateWidth(id, prevNames.current[id]);
+        return;
+      }
+
+      setDuplicateError(false);
       prevNames.current[id] = newName;
 
       setSubjects((prev) =>
-        prev.map((s, i) =>
-          i === index ? { ...s, name: newName, nameEdited: true } : s
-        )
+        prev.map((s, i) => i === index ? { ...s, name: newName, nameEdited: true } : s)
       );
 
       updateWidth(id, newName);
@@ -87,7 +90,7 @@ export default function OnboardingStep2Form() {
 
   const handleLevelChange = (index: number, level: string) => {
     setSubjects((prev) =>
-      prev.map((s, i) => (i === index ? { ...s, level, levelEdited: true } : s))
+      prev.map((s, i) => i === index ? { ...s, level, levelEdited: true } : s)
     );
   };
 
@@ -98,25 +101,15 @@ export default function OnboardingStep2Form() {
     }
 
     const newId = subjectIdCounter++;
-
     setMaxReached(false);
+    setDuplicateError(false);
 
     setSubjects((prev) => [
       ...prev,
-      {
-        id: newId,
-        name: "",
-        level: "중",
-        nameEdited: false,
-        levelEdited: false,
-      },
+      { id: newId, name: "", level: "중", nameEdited: false, levelEdited: false },
     ]);
 
-    setInputWidths((prev) => ({
-      ...prev,
-      [newId]: 72,
-    }));
-
+    setInputWidths((prev) => ({ ...prev, [newId]: 72 }));
     prevNames.current[newId] = "";
   };
 
@@ -125,14 +118,11 @@ export default function OnboardingStep2Form() {
     setIsPressingUI(true);
 
     const id = subjects[index].id;
-
-    // ⭐ 둘 다 해줘야 완벽
     setFocusedId(null);
     inputRefs.current[id]?.blur();
 
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
-
       setRemovingId(id);
 
       setTimeout(() => {
@@ -143,7 +133,6 @@ export default function OnboardingStep2Form() {
 
   const handleLongPressEnd = () => {
     setIsPressingUI(false);
-
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
       longPressTimer.current = null;
@@ -152,12 +141,10 @@ export default function OnboardingStep2Form() {
 
   const handleDelete = (index: number) => {
     const id = subjects[index].id;
-
     delete inputRefs.current[id];
     delete prevNames.current[id];
 
     setSubjects((prev) => prev.filter((_, i) => i !== index));
-
     setInputWidths((prev) => {
       const updated = { ...prev };
       delete updated[id];
@@ -166,6 +153,7 @@ export default function OnboardingStep2Form() {
 
     setRemovingId(null);
     setMaxReached(false);
+    setDuplicateError(false);
   };
 
   const handleSubmit = () => {};
@@ -180,20 +168,16 @@ export default function OnboardingStep2Form() {
   const renderSubjectItem = (subject: Subject, index: number) => (
     <div
       key={subject.id}
-      className={`flex items-center gap-2 ${
-        removingId === subject.id ? "animate-delete" : ""
-      }`}
+      className={`flex items-center gap-2 ${removingId === subject.id ? "animate-delete" : ""}`}
     >
       <input
-        ref={(el) => {
-          inputRefs.current[subject.id] = el;
-        }}
+        ref={(el) => { inputRefs.current[subject.id] = el; }}
         defaultValue={subject.name}
         placeholder="과목명"
         maxLength={MAX_NAME_LENGTH}
         onChange={(e) => updateWidth(subject.id, e.target.value)}
         onBlur={() => {
-          setFocusedId(null); // 빠지면 다시 default
+          setFocusedId(null);
           handleNameBlur(index);
         }}
         onClick={() => {
@@ -213,7 +197,7 @@ export default function OnboardingStep2Form() {
             e.target.blur();
             return;
           }
-          setFocusedId(subject.id); // 포커스 들어오면 text 모드
+          setFocusedId(subject.id);
         }}
         onPointerDown={(e) => {
           e.stopPropagation();
@@ -232,11 +216,7 @@ export default function OnboardingStep2Form() {
           borderRadius: "12px",
           padding: "0 12px",
           transition: "all 0.2s ease",
-          cursor: isPressingUI
-            ? "default" // 롱프레스 중이면 무조건 화살표
-            : focusedId === subject.id
-            ? "text"
-            : "default",
+          cursor: isPressingUI ? "default" : focusedId === subject.id ? "text" : "default",
         }}
       />
 
@@ -245,9 +225,7 @@ export default function OnboardingStep2Form() {
           value={subject.level}
           onChange={(e) => handleLevelChange(index, e.target.value)}
           className={`text-sm focus:outline-none appearance-none pr-7 pl-3 ${
-            subject.levelEdited || subject.nameEdited
-              ? "text-white"
-              : "text-white/55"
+            subject.levelEdited || subject.nameEdited ? "text-white" : "text-white/55"
           }`}
           style={{
             height: "42px",
@@ -258,11 +236,7 @@ export default function OnboardingStep2Form() {
           }}
         >
           {levels.map((level) => (
-            <option
-              key={level}
-              value={level}
-              style={{ backgroundColor: "#2a2a2a" }}
-            >
+            <option key={level} value={level} style={{ backgroundColor: "#2a2a2a" }}>
               {level}
             </option>
           ))}
@@ -304,9 +278,7 @@ export default function OnboardingStep2Form() {
           <h1 className="text-white text-2xl font-bold">
             {"{userName}"} 님의 과목별 성적을 입력해주세요.
           </h1>
-          <p className="text-xs text-white/55">
-            과목명을 길게 누르면 삭제됩니다.
-          </p>
+          <p className="text-xs text-white/55">과목명을 길게 누르면 삭제됩니다.</p>
         </div>
       </div>
 
@@ -331,25 +303,25 @@ export default function OnboardingStep2Form() {
           )}
         </div>
 
-        {maxReached && (
-          <p className="text-xs text-brand-error">
-            과목은 최대 9개까지만 추가할 수 있어요.
-          </p>
+        {/* 에러 메시지 */}
+        {(maxReached || duplicateError) && (
+          <div className="flex items-center gap-1">
+            <img src="/images/icon/error.svg" alt="에러" className="w-4 h-4" />
+            <p className="text-xs text-brand-error">
+              {maxReached
+                ? "과목 추가는 최대 9개까지 가능합니다."
+                : "이미 존재하는 과목명입니다."}
+            </p>
+          </div>
         )}
       </div>
 
       <div className="flex flex-col gap-1">
-        <p className="text-xs text-white/55">
-          일정 생성에 반영되는 만큼 정확하게 입력해주세요.
-        </p>
-        <p className="text-xs text-white/55">
-          기본과목은 선택하지 않으면 자동으로 미입력 처리됩니다.
-        </p>
+        <p className="text-xs text-white/55">일정 생성에 반영되는 만큼 정확하게 입력해주세요.</p>
+        <p className="text-xs text-white/55">기본과목은 선택하지 않으면 자동으로 미입력 처리됩니다.</p>
       </div>
 
-      <Button type="submit" variant="primary" onClick={handleSubmit}>
-        완료
-      </Button>
+      <Button type="submit" variant="primary" onClick={handleSubmit}>완료</Button>
 
       <p className="text-sm text-right">
         <span className="text-white">2</span>

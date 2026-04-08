@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import { useRouter } from 'next/navigation';
 
 export default function OnboardingForm() {
+  const router = useRouter();
   const [nickname, setNickname] = useState("");
   const [school, setSchool] = useState("");
   const [schoolLevel, setSchoolLevel] = useState("중학교");
@@ -28,6 +30,7 @@ export default function OnboardingForm() {
       return;
     }
     setNicknameError("");
+    router.push('/onboarding/step2');
   };
 
   return (
