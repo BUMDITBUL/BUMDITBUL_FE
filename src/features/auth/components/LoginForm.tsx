@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
@@ -106,14 +107,14 @@ export default function LoginForm() {
 
       {/* 하단 링크 */}
       <div className="flex flex-col gap-1">
-        <a href="/find-password" className="text-sm underline text-white">
+        <Link href="/find-password" className="text-sm underline text-white">
           비밀번호를 잊어 버리셨나요?
-        </a>
+        </Link>
         <p className="text-sm text-white/55">
           아직 계정이 없어요.{" "}
-          <a href="/signup" className="underline text-white">
+          <Link href="/signup" className="underline text-white">
             회원가입하기
-          </a>
+          </Link>
         </p>
       </div>
     </div>

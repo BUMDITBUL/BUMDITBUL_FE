@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -197,9 +198,9 @@ export default function SignupForm() {
       {/* 하단 링크 */}
       <p className="text-sm text-white/55">
         이미 계정이 있어요.{" "}
-        <a href="/login" className="underline text-white">
+        <Link href="/login" className="underline text-white">
           로그인하기
-        </a>
+        </Link>
       </p>
     </div>
   );

@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 import Input from '@/components/ui/Input';
 
@@ -116,9 +117,9 @@ export default function FindPasswordForm() {
       </div>
 
       {/* 로그인하기 */}
-      <a href="/login" className="text-sm underline text-white">
+      <Link href="/login" className="text-sm underline text-white">
         로그인하기
-      </a>
+      </Link>
     </div>
   );
 }
