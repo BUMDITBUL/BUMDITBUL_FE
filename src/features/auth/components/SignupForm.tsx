@@ -3,53 +3,33 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signupSchema, type SignupFormValues } from '@/features/auth/schemas/auth.schema';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 
 export default function SignupForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [code, setCode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
 
-  const [passwordError, setPasswordError] = useState('');
-  const [passwordConfirmError, setPasswordConfirmError] = useState('');
-  const [codeError, setCodeError] = useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
+  });
 
-  const validatePassword = (value: string) => {
-    const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-    return passwordRegex.test(value);
+  const onSubmit = (data: SignupFormValues) => {
+    // TODO: API 연동
+    console.log(data);
   };
 
   const handleSendCode = () => {
     setCodeSent(true);
-    setCodeError('');
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    let hasError = false;
-
-    if (!validatePassword(password)) {
-      setPasswordError('비밀번호 형식이 올바르지 않습니다.');
-      hasError = true;
-    }
-
-    if (password !== passwordConfirm) {
-      setPasswordConfirmError('비밀번호가 일치하지 않습니다.');
-      hasError = true;
-    }
-
-    if (!code) {
-      setCodeError('인증번호를 다시 확인해주세요.');
-      hasError = true;
-    }
-
-    if (hasError) return;
   };
 
   return (
@@ -69,16 +49,17 @@ export default function SignupForm() {
       </div>
 
       {/* 폼 */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         {/* 이메일 */}
         <div className="flex flex-col gap-2">
           <label className="text-white/55 text-sm font-medium">이메일</label>
           <Input
             type="email"
             placeholder="이메일을 입력해주세요."
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            error={!!errors.email}
+            {...register('email')}
           />
+          {errors.email && <ErrorMessage message={errors.email.message!} />}
         </div>
 
         {/* 인증번호 */}
@@ -89,9 +70,8 @@ export default function SignupForm() {
               <div className="flex-1">
                 <Input
                   placeholder="인증번호를 입력해주세요."
-                  value={code}
-                  onChange={(e) => { setCode(e.target.value); setCodeError(''); }}
-                  error={!!codeError}
+                  error={!!errors.verificationCode}
+                  {...register('verificationCode')}
                 />
               </div>
               <button
@@ -107,10 +87,10 @@ export default function SignupForm() {
                 확인
               </button>
             </div>
-            {codeSent && !codeError && (
+            {codeSent && !errors.verificationCode && (
               <p className="text-xs text-white/55">입력하신 이메일로 인증번호를 전송했어요.</p>
             )}
-            {codeError && <ErrorMessage message={codeError} />}
+            {errors.verificationCode && <ErrorMessage message={errors.verificationCode.message!} />}
           </div>
         </div>
 
@@ -121,9 +101,8 @@ export default function SignupForm() {
             <Input
               type={showPassword ? "text" : "password"}
               placeholder="8자 이상 특수문자를 포함하여 입력"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setPasswordError(''); }}
-              error={!!passwordError}
+              error={!!errors.password}
+              {...register('password')}
               rightElement={
                 <button type="button" onClick={() => setShowPassword(!showPassword)}>
                   <Image
@@ -136,7 +115,7 @@ export default function SignupForm() {
                 </button>
               }
             />
-            {passwordError && <ErrorMessage message="비밀번호는 8자 이상, 특수문자를 포함해야 합니다." />}
+            {errors.password && <ErrorMessage message={errors.password.message!} />}
           </div>
         </div>
 
@@ -147,9 +126,8 @@ export default function SignupForm() {
             <Input
               type={showPasswordConfirm ? "text" : "password"}
               placeholder="8자 이상 특수문자를 포함하여 입력"
-              value={passwordConfirm}
-              onChange={(e) => { setPasswordConfirm(e.target.value); setPasswordConfirmError(''); }}
-              error={!!passwordConfirmError}
+              error={!!errors.passwordConfirm}
+              {...register('passwordConfirm')}
               rightElement={
                 <button type="button" onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}>
                   <Image
@@ -162,7 +140,7 @@ export default function SignupForm() {
                 </button>
               }
             />
-            {passwordConfirmError && <ErrorMessage message={passwordConfirmError} />}
+            {errors.passwordConfirm && <ErrorMessage message={errors.passwordConfirm.message!} />}
           </div>
         </div>
 

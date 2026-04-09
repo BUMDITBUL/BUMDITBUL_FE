@@ -3,23 +3,27 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, type LoginFormValues } from "@/features/auth/schemas/auth.schema";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loginError, setLoginError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) {
-      setLoginError("이메일 또는 비밀번호가 올바르지 않습니다.");
-      return;
-    }
-    setLoginError("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = (data: LoginFormValues) => {
+    // TODO: API 연동
+    console.log(data);
   };
 
   return (
@@ -39,17 +43,17 @@ export default function LoginForm() {
       </div>
 
       {/* 폼 */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         {/* 이메일 */}
         <div className="flex flex-col gap-2">
           <label className="text-white/55 text-sm font-medium">이메일</label>
           <Input
             type="email"
             placeholder="이메일 입력"
-            value={email}
-            onChange={(e) => { setEmail(e.target.value); setLoginError(""); }}
-            error={!!loginError}
+            error={!!errors.email}
+            {...register("email")}
           />
+          {errors.email && <ErrorMessage message={errors.email.message!} />}
         </div>
 
         {/* 비밀번호 */}
@@ -58,9 +62,8 @@ export default function LoginForm() {
           <Input
             type={showPassword ? "text" : "password"}
             placeholder="비밀번호 입력"
-            value={password}
-            onChange={(e) => { setPassword(e.target.value); setLoginError(""); }}
-            error={!!loginError}
+            error={!!errors.password}
+            {...register("password")}
             rightElement={
               <button type="button" onClick={() => setShowPassword(!showPassword)}>
                 <Image
@@ -73,9 +76,8 @@ export default function LoginForm() {
               </button>
             }
           />
+          {errors.password && <ErrorMessage message={errors.password.message!} />}
         </div>
-
-        {loginError && <ErrorMessage message={loginError} />}
 
         <Button type="submit" variant="primary">
           로그인

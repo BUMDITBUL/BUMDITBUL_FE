@@ -2,37 +2,35 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { onboardingSchema, type OnboardingFormValues } from "@/features/auth/schemas/auth.schema";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import { useRouter } from 'next/navigation';
 
 export default function OnboardingForm() {
   const router = useRouter();
-  const [nickname, setNickname] = useState("");
-  const [school, setSchool] = useState("");
-  const [schoolLevel, setSchoolLevel] = useState("중학교");
-  const [nicknameError, setNicknameError] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
   const schoolLevels = ["초등학교", "중학교", "고등학교", "대학교"];
 
-  const validateNickname = (value: string) => {
-    const nicknameRegex = /^[가-힣]{2,5}$/;
-    return nicknameRegex.test(value);
-  };
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<OnboardingFormValues>({
+    resolver: zodResolver(onboardingSchema),
+    defaultValues: { schoolLevel: "중학교" },
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nickname.trim()) {
-      setNicknameError("닉네임은 공백으로 둘 수 없습니다.");
-      return;
-    }
-    if (!validateNickname(nickname)) {
-      setNicknameError("닉네임은 2~5자 한글만 가능합니다.");
-      return;
-    }
-    setNicknameError("");
-    router.push('/onboarding/step2');
+  const schoolLevel = watch("schoolLevel");
+
+  const onSubmit = (_data: OnboardingFormValues) => {
+    // TODO: API 연동
+    router.push("/onboarding/step2");
   };
 
   return (
@@ -51,26 +49,20 @@ export default function OnboardingForm() {
       </div>
 
       {/* 폼 */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
         {/* 닉네임 */}
         <div className="flex flex-col gap-2">
           <label className="text-white/55 text-sm font-medium">닉네임</label>
           <Input
             placeholder="닉네임을 입력해주세요."
-            value={nickname}
-            onChange={(e) => {
-              setNickname(e.target.value);
-              setNicknameError("");
-            }}
-            error={!!nicknameError}
+            error={!!errors.nickname}
+            {...register("nickname")}
           />
           <p className="text-xs pl-[14px]">
-            {nicknameError ? (
-              <span className="text-brand-error">{nicknameError}</span>
+            {errors.nickname ? (
+              <span className="text-brand-error">{errors.nickname.message}</span>
             ) : (
-              <span className="text-white/40">
-                앞으로는 이렇게 불러 드릴게요.
-              </span>
+              <span className="text-white/40">앞으로는 이렇게 불러 드릴게요.</span>
             )}
           </p>
         </div>
@@ -82,8 +74,7 @@ export default function OnboardingForm() {
             <div className="flex-1 min-w-0">
               <Input
                 placeholder="교명을 입력해주세요."
-                value={school}
-                onChange={(e) => setSchool(e.target.value)}
+                {...register("school")}
               />
             </div>
             {/* 커스텀 드롭다운 */}
@@ -123,7 +114,7 @@ export default function OnboardingForm() {
                       key={level}
                       type="button"
                       onClick={() => {
-                        setSchoolLevel(level);
+                        setValue("schoolLevel", level);
                         setIsOpen(false);
                       }}
                       className="text-white/55 text-sm px-4 py-3 text-left hover:bg-white/5 transition-colors"

@@ -1,27 +1,24 @@
-interface InputProps {
-  type?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+import { forwardRef } from "react";
+
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   rightElement?: React.ReactNode;
   error?: boolean;
 }
 
-export default function Input({
+const Input = forwardRef<HTMLInputElement, InputProps>(({
   type = "text",
   placeholder,
-  value,
-  onChange,
   rightElement,
   error = false,
-}: InputProps) {
+  ...rest
+}, ref) => {
   return (
     <div className="relative">
       <input
+        ref={ref}
         type={type}
         placeholder={placeholder}
-        value={value}
-        onChange={onChange}
+        {...rest}
         className="w-full bg-transparent text-white text-sm focus:outline-none placeholder:text-white/55"
         style={{
           height: "46px",
@@ -40,4 +37,8 @@ export default function Input({
       )}
     </div>
   );
-}
+});
+
+Input.displayName = "Input";
+
+export default Input;
