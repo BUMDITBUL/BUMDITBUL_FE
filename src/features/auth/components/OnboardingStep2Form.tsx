@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import Button from "@/components/ui/Button";
+import ErrorMessage from "@/components/ui/ErrorMessage";
 
 const DEFAULT_SUBJECTS = [""];
 const DEFAULT_SET = new Set(DEFAULT_SUBJECTS);
@@ -157,7 +158,9 @@ export default function OnboardingStep2Form() {
     setDuplicateError(false);
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+  };
 
   const columns: Subject[][] = [];
   for (let i = 0; i < subjects.length; i += 3) {
@@ -272,7 +275,8 @@ export default function OnboardingStep2Form() {
   );
 
   return (
-    <div
+    <form
+      onSubmit={handleSubmit}
       className="flex flex-col gap-8 mx-auto"
       style={{ width: "fit-content", minWidth: "400px" }}
     >
@@ -307,17 +311,8 @@ export default function OnboardingStep2Form() {
           )}
         </div>
 
-        {/* 에러 메시지 */}
-        {(maxReached || duplicateError) && (
-          <div className="flex items-center gap-1">
-            <Image src="/images/icon/error.svg" alt="에러" width={16} height={16} />
-            <p className="text-xs text-brand-error">
-              {maxReached
-                ? "과목 추가는 최대 9개까지 가능합니다."
-                : "이미 존재하는 과목명입니다."}
-            </p>
-          </div>
-        )}
+        {maxReached && <ErrorMessage message="과목 추가는 최대 9개까지 가능합니다." />}
+        {duplicateError && <ErrorMessage message="이미 존재하는 과목명입니다." />}
       </div>
 
       <div className="flex flex-col gap-1">
@@ -325,12 +320,12 @@ export default function OnboardingStep2Form() {
         <p className="text-xs text-white/55">기본과목은 선택하지 않으면 자동으로 미입력 처리됩니다.</p>
       </div>
 
-      <Button type="submit" variant="primary" onClick={handleSubmit}>완료</Button>
+      <Button type="submit" variant="primary">완료</Button>
 
       <p className="text-sm text-right">
         <span className="text-white">2</span>
         <span className="text-white/55">/2</span>
       </p>
-    </div>
+    </form>
   );
 }

@@ -13,7 +13,8 @@ export default function FindPasswordForm() {
   const [emailError, setEmailError] = useState('');
   const [codeError, setCodeError] = useState('');
 
-  const handleSendCode = () => {
+  const handleSendCode = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!email) {
       setEmailError('이메일을 입력해주세요.');
       return;
@@ -22,7 +23,8 @@ export default function FindPasswordForm() {
     setCodeSent(true);
   };
 
-  const handleVerifyCode = () => {
+  const handleVerifyCode = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!code) {
       setCodeError('인증번호를 다시 확인해주세요.');
       return;
@@ -46,7 +48,7 @@ export default function FindPasswordForm() {
       {/* 폼 */}
       <div className="flex flex-col gap-4">
         {/* 이메일 + 전송 버튼 */}
-        <div className="flex flex-col gap-2">
+        <form onSubmit={handleSendCode} className="flex flex-col gap-2">
           <label className="text-white/55 text-sm font-medium">이메일</label>
           <div className="flex flex-col gap-1">
             <div className="flex gap-2">
@@ -60,8 +62,7 @@ export default function FindPasswordForm() {
                 />
               </div>
               <button
-                type="button"
-                onClick={handleSendCode}
+                type="submit"
                 className="shrink-0 px-6 text-white/55 text-sm transition-colors hover:bg-white/5"
                 style={{
                   height: "46px",
@@ -75,10 +76,10 @@ export default function FindPasswordForm() {
             {emailError && <ErrorMessage message={emailError} />}
             {codeSent && <p className="text-xs text-white/55">입력하신 이메일로 인증코드를 전송했어요.</p>}
           </div>
-        </div>
+        </form>
 
         {/* 인증번호 + 확인 버튼 */}
-        <div className="flex flex-col gap-2">
+        <form onSubmit={handleVerifyCode} className="flex flex-col gap-2">
           <label className="text-white/55 text-sm font-medium">인증번호</label>
           <div className="flex flex-col gap-1">
             <div className="flex gap-2">
@@ -91,8 +92,7 @@ export default function FindPasswordForm() {
                 />
               </div>
               <button
-                type="button"
-                onClick={handleVerifyCode}
+                type="submit"
                 className="shrink-0 px-6 text-white/55 text-sm transition-colors hover:bg-white/5"
                 style={{
                   height: "46px",
@@ -105,7 +105,7 @@ export default function FindPasswordForm() {
             </div>
             {codeError && <ErrorMessage message={codeError} />}
           </div>
-        </div>
+        </form>
       </div>
 
       {/* 로그인하기 */}

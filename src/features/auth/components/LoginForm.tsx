@@ -13,7 +13,8 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!email || !password) {
       setLoginError("이메일 또는 비밀번호가 올바르지 않습니다.");
       return;
@@ -38,7 +39,7 @@ export default function LoginForm() {
       </div>
 
       {/* 폼 */}
-      <div className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {/* 이메일 */}
         <div className="flex flex-col gap-2">
           <label className="text-white/55 text-sm font-medium">이메일</label>
@@ -76,10 +77,10 @@ export default function LoginForm() {
 
         {loginError && <ErrorMessage message={loginError} />}
 
-        <Button type="submit" variant="primary" onClick={handleSubmit}>
+        <Button type="submit" variant="primary">
           로그인
         </Button>
-      </div>
+      </form>
 
       {/* SNS 로그인 */}
       <div className="flex flex-col gap-3">

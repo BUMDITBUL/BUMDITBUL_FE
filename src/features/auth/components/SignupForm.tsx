@@ -30,7 +30,8 @@ export default function SignupForm() {
     setCodeError('');
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     let hasError = false;
 
     if (!validatePassword(password)) {
@@ -68,7 +69,7 @@ export default function SignupForm() {
       </div>
 
       {/* 폼 */}
-      <div className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {/* 이메일 */}
         <div className="flex flex-col gap-2">
           <label className="text-white/55 text-sm font-medium">이메일</label>
@@ -165,8 +166,8 @@ export default function SignupForm() {
           </div>
         </div>
 
-        <Button type="submit" variant="primary" onClick={handleSubmit}>회원가입</Button>
-      </div>
+        <Button type="submit" variant="primary">회원가입</Button>
+      </form>
 
       {/* SNS 로그인 */}
       <div className="flex flex-col gap-3">

@@ -21,7 +21,8 @@ export default function OnboardingForm() {
     return nicknameRegex.test(value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!nickname.trim()) {
       setNicknameError("닉네임은 공백으로 둘 수 없습니다.");
       return;
@@ -50,7 +51,7 @@ export default function OnboardingForm() {
       </div>
 
       {/* 폼 */}
-      <div className="flex flex-col gap-5">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         {/* 닉네임 */}
         <div className="flex flex-col gap-2">
           <label className="text-white/55 text-sm font-medium">닉네임</label>
@@ -145,10 +146,10 @@ export default function OnboardingForm() {
           범딧불을 이용 하시기 전에 미리 확인할 내용이 남아 있어요.
         </p>
 
-        <Button type="submit" variant="primary" onClick={handleSubmit}>
+        <Button type="submit" variant="primary">
           다음으로
         </Button>
-      </div>
+      </form>
 
       {/* 페이지 표시 */}
       <p className="text-sm text-right">
