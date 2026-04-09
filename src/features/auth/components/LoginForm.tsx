@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import ErrorMessage from "@/components/ui/ErrorMessage";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 
@@ -73,13 +74,7 @@ export default function LoginForm() {
           />
         </div>
 
-        {/* 에러 메시지 */}
-        {loginError && (
-          <div className="flex items-center gap-1">
-            <Image src="/images/icon/error.svg" alt="에러" width={16} height={16} />
-            <p className="text-xs text-brand-error">{loginError}</p>
-          </div>
-        )}
+        {loginError && <ErrorMessage message={loginError} />}
 
         <Button type="submit" variant="primary" onClick={handleSubmit}>
           로그인
