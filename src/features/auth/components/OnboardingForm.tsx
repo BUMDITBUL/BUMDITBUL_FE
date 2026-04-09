@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
@@ -37,7 +38,7 @@ export default function OnboardingForm() {
     <div className="w-full flex flex-col gap-8">
       {/* 로고 + 타이틀 */}
       <div className="flex flex-col gap-3">
-        <img src="/images/logo.svg" alt="범딧불 로고" className="w-10 h-10" />
+        <Image src="/images/logo.svg" alt="범딧불 로고" width={40} height={40} />
         <div className="flex flex-col gap-1">
           <h1 className="text-white text-2xl font-bold">
             범딧불이 처음이신가요?
@@ -99,12 +100,13 @@ export default function OnboardingForm() {
                 }}
               >
                 {schoolLevel}
-                <img
+                <Image
                   src="/images/icon/school-toggle.svg"
                   alt="열기"
-                  className={`w-4 h-4 transition-transform ${
-                    isOpen ? "rotate-180" : ""
-                  }`}
+                  width={16}
+                  height={16}
+                  style={{ width: 16, height: 16, flexShrink: 0 }}
+                  className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
                 />
               </button>
               {isOpen && (

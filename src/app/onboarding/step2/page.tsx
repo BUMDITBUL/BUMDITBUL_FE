@@ -1,4 +1,4 @@
-import OnboardingStep2Form from '@/components/auth/OnboardingStep2Form';
+import OnboardingStep2Form from '@/features/auth/components/OnboardingStep2Form';
 
 export default function OnboardingStep2Page() {
   return <OnboardingStep2Form />;

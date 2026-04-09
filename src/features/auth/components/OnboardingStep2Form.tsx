@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef, useState } from "react";
 import Button from "@/components/ui/Button";
 
@@ -242,10 +243,13 @@ export default function OnboardingStep2Form() {
           ))}
         </select>
 
-        <img
+        <Image
           src="/images/icon/school-toggle.svg"
           alt="열기"
-          className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
+          width={16}
+          height={16}
+          style={{ width: 16, height: 16 }}
+          className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none"
         />
       </div>
     </div>
@@ -273,7 +277,7 @@ export default function OnboardingStep2Form() {
       style={{ width: "fit-content", minWidth: "400px" }}
     >
       <div className="flex flex-col gap-3">
-        <img src="/images/logo.svg" alt="범딧불 로고" className="w-10 h-10" />
+        <Image src="/images/logo.svg" alt="범딧불 로고" width={40} height={40} />
         <div className="flex flex-col gap-1">
           <h1 className="text-white text-2xl font-bold">
             {"{userName}"} 님의 과목별 성적을 입력해주세요.
@@ -306,7 +310,7 @@ export default function OnboardingStep2Form() {
         {/* 에러 메시지 */}
         {(maxReached || duplicateError) && (
           <div className="flex items-center gap-1">
-            <img src="/images/icon/error.svg" alt="에러" className="w-4 h-4" />
+            <Image src="/images/icon/error.svg" alt="에러" width={16} height={16} />
             <p className="text-xs text-brand-error">
               {maxReached
                 ? "과목 추가는 최대 9개까지 가능합니다."

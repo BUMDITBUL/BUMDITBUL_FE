@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 
@@ -10,7 +11,7 @@ export default function FindPasswordResult() {
     <div className="w-full flex flex-col gap-10">
       {/* 로고 + 타이틀 */}
       <div className="flex flex-col gap-3">
-        <img src="/images/logo.svg" alt="범딧불 로고" className="w-10 h-10" />
+        <Image src="/images/logo.svg" alt="범딧불 로고" width={40} height={40} />
         <div className="flex flex-col gap-1">
           <h1 className="text-white text-2xl font-bold">비밀번호 찾기</h1>
           <p className="text-sm text-white/55">{"{userName}"}님의 비밀번호는</p>

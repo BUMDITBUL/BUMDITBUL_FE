@@ -1,8 +1,17 @@
 'use client'
 
+import Image from 'next/image';
 import { useState } from 'react';
 import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button'
+
+function ErrorMessage({ message }: { message: string }) {
+  return (
+    <div className="flex items-center gap-1">
+      <Image src="/images/icon/error.svg" alt="에러" width={16} height={16} />
+      <p className="text-xs text-brand-error">{message}</p>
+    </div>
+  );
+}
 
 export default function FindPasswordForm() {
   const [email, setEmail] = useState('');
@@ -28,22 +37,15 @@ export default function FindPasswordForm() {
     setCodeError('');
   };
 
-  const ErrorMessage = ({ message }: { message: string }) => (
-    <div className="flex items-center gap-1">
-      <img src="/images/icon/error.svg" alt="에러" className="w-4 h-4" />
-      <p className="text-xs text-brand-error">{message}</p>
-    </div>
-  );
-
   return (
     <div className="w-full flex flex-col gap-6">
       {/* 로고 + 타이틀 */}
       <div className="flex flex-col gap-3">
-        <img src="/images/logo.svg" alt="범딧불 로고" className="w-10 h-10" />
+        <Image src="/images/logo.svg" alt="범딧불 로고" width={40} height={40} />
         <div className="flex flex-col gap-1">
           <h1 className="text-white text-2xl font-bold">비밀번호 찾기</h1>
           <p className="text-sm leading-relaxed text-white/55">
-            이메일을 입력하시고, 인증번호를 작성 해주세요.
+            이메일을 입력하시고, 인증코드를 작성 해주세요.
           </p>
         </div>
       </div>

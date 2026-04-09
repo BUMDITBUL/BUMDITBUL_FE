@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
@@ -22,7 +23,7 @@ export default function LoginForm() {
     <div className="w-full flex flex-col gap-6">
       {/* 로고 + 타이틀 */}
       <div className="flex flex-col gap-3">
-        <img src="/images/logo.svg" alt="범딧불 로고" className="w-10 h-10" />
+        <Image src="/images/logo.svg" alt="범딧불 로고" width={40} height={40} />
         <div className="flex flex-col gap-1">
           <h1 className="text-white text-2xl font-bold">범딧불에 로그인</h1>
           <p className="text-sm leading-relaxed text-brand-black-500">
@@ -59,10 +60,12 @@ export default function LoginForm() {
             error={!!loginError}
             rightElement={
               <button type="button" onClick={() => setShowPassword(!showPassword)}>
-                <img
+                <Image
                   src={showPassword ? "/images/icon/open-eyes.svg" : "/images/icon/close-eyes.svg"}
                   alt={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
-                  className="w-5 h-5 opacity-55"
+                  width={20}
+                  height={20}
+                  className="opacity-55"
                 />
               </button>
             }
@@ -72,7 +75,7 @@ export default function LoginForm() {
         {/* 에러 메시지 */}
         {loginError && (
           <div className="flex items-center gap-1">
-            <img src="/images/icon/error.svg" alt="에러" className="w-4 h-4" />
+            <Image src="/images/icon/error.svg" alt="에러" width={16} height={16} />
             <p className="text-xs text-brand-error">{loginError}</p>
           </div>
         )}
@@ -91,11 +94,11 @@ export default function LoginForm() {
         </div>
         <div className="flex gap-3">
           <Button variant="outline" fullWidth={false}>
-            <img src="/images/google.svg" alt="Google" className="w-4 h-4 opacity-55" />
+            <Image src="/images/google.svg" alt="Google" width={16} height={16} style={{ width: 16, height: 16, flexShrink: 0 }} className="opacity-55" />
             Google
           </Button>
           <Button variant="outline" fullWidth={false}>
-            <img src="/images/apple.svg" alt="Apple" className="w-4 h-4 opacity-55" />
+            <Image src="/images/apple.svg" alt="Apple" width={16} height={16} style={{ width: 16, height: 16, flexShrink: 0 }} className="opacity-55" />
             Apple
           </Button>
         </div>
