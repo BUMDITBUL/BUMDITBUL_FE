@@ -16,7 +16,8 @@ export default function AuthLayout({
         <div className="relative w-1/2 overflow-hidden">
           <Image
             src="/images/auth-bg.jpg"
-            alt="background"
+            alt=""
+            aria-hidden="true"
             fill
             sizes="50vw"
             priority
