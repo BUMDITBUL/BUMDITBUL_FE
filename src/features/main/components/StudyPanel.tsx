@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 
 type SubItem = {
@@ -15,6 +15,8 @@ type StudyItem = {
   subject: string;
   subItems: SubItem[];
 };
+
+type DraftSub = { material: string; pages: string };
 
 const initialItems: StudyItem[] = [
   {
@@ -39,10 +41,47 @@ const initialItems: StudyItem[] = [
   },
 ];
 
+let itemIdCounter = 10;
+let subIdCounter = 100;
+
+function CircleEmpty() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
+      <circle cx="7" cy="7" r="6.5" stroke="rgba(255,255,255,0.25)" />
+    </svg>
+  );
+}
+
+function CircleCheck({ checked }: { checked: boolean }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
+      {checked ? (
+        <>
+          <circle cx="7" cy="7" r="6.5" fill="var(--color-brand-green-400)" />
+          <path d="M4 7l2 2 4-4" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+        </>
+      ) : (
+        <circle cx="7" cy="7" r="6.5" stroke="rgba(255,255,255,0.25)" />
+      )}
+    </svg>
+  );
+}
+
 export default function StudyPanel() {
   const [items, setItems] = useState(initialItems);
+  const [removingId, setRemovingId] = useState<number | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [draftSubject, setDraftSubject] = useState("");
+  const [draftSubs, setDraftSubs] = useState<DraftSub[]>([{ material: "", pages: "" }]);
+
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const isLongPress = useRef(false);
+  const subjectRef = useRef<HTMLInputElement>(null);
+  const materialRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const pagesRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const toggleSub = (itemId: number, subId: number) => {
+    if (isLongPress.current) return;
     setItems(prev => prev.map(item =>
       item.id !== itemId ? item : {
         ...item,
@@ -52,11 +91,64 @@ export default function StudyPanel() {
   };
 
   const toggleAll = (itemId: number) => {
+    if (isLongPress.current) return;
     setItems(prev => prev.map(item => {
       if (item.id !== itemId) return item;
       const allDone = item.subItems.every(s => s.checked);
       return { ...item, subItems: item.subItems.map(s => ({ ...s, checked: !allDone })) };
     }));
+  };
+
+  const handleLongPressStart = (itemId: number) => {
+    isLongPress.current = false;
+    longPressTimer.current = setTimeout(() => {
+      isLongPress.current = true;
+      setRemovingId(itemId);
+      setTimeout(() => {
+        setItems(prev => prev.filter(i => i.id !== itemId));
+        setRemovingId(null);
+        isLongPress.current = false;
+      }, 200);
+    }, 500);
+  };
+
+  const handleLongPressEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const startAdding = () => {
+    setDraftSubject("");
+    setDraftSubs([{ material: "", pages: "" }]);
+    setIsAdding(true);
+    setTimeout(() => subjectRef.current?.focus(), 50);
+  };
+
+  const updateDraftSub = (i: number, field: keyof DraftSub, value: string) => {
+    setDraftSubs(prev => prev.map((s, idx) => idx === i ? { ...s, [field]: value } : s));
+  };
+
+  const addDraftRow = (focusIndex: number) => {
+    setDraftSubs(prev => [...prev, { material: "", pages: "" }]);
+    setTimeout(() => materialRefs.current[focusIndex]?.focus(), 50);
+  };
+
+  const confirmAdd = () => {
+    const subject = draftSubject.trim();
+    if (!subject) { cancelAdd(); return; }
+    const subItems = draftSubs
+      .filter(s => s.material.trim())
+      .map(s => ({ id: subIdCounter++, material: s.material.trim(), pages: s.pages.trim(), checked: false }));
+    setItems(prev => [...prev, { id: itemIdCounter++, subject, subItems }]);
+    cancelAdd();
+  };
+
+  const cancelAdd = () => {
+    setIsAdding(false);
+    setDraftSubject("");
+    setDraftSubs([{ material: "", pages: "" }]);
   };
 
   return (
@@ -72,15 +164,19 @@ export default function StudyPanel() {
           return (
             <div
               key={item.id}
-              className="flex flex-col rounded-xl px-4 py-3 gap-2.5"
-              style={{ background: "#3a3a3a" }}
+              className="flex flex-col rounded-xl px-4 py-3 gap-2.5 transition-opacity duration-200 select-none"
+              style={{ background: "#3a3a3a", opacity: removingId === item.id ? 0 : 1 }}
+              onPointerDown={() => handleLongPressStart(item.id)}
+              onPointerUp={handleLongPressEnd}
+              onPointerLeave={handleLongPressEnd}
             >
-              {/* 과목 헤더 — 오른쪽 큰 체크 */}
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-white">
-                  {item.subject}
-                </span>
-                <button onClick={() => toggleAll(item.id)} className="shrink-0 p-1">
+                <span className="text-sm font-medium text-white">{item.subject}</span>
+                <button
+                  onPointerDown={e => e.stopPropagation()}
+                  onClick={() => toggleAll(item.id)}
+                  className="shrink-0 p-1"
+                >
                   <Image
                     src={allDone ? "/images/icon/check_active.svg" : "/images/icon/check_default.svg"}
                     alt={allDone ? "완료" : "미완료"}
@@ -89,28 +185,16 @@ export default function StudyPanel() {
                   />
                 </button>
               </div>
-
-              {/* 세부 항목 — 작은 원 + 연속 취소선 */}
               <div className="flex flex-col gap-1.5 pl-0.5">
                 {item.subItems.map(sub => (
                   <button
                     key={sub.id}
                     type="button"
+                    onPointerDown={e => e.stopPropagation()}
                     onClick={() => toggleSub(item.id, sub.id)}
                     className="flex items-center gap-2 text-left"
                   >
-                    {/* 작은 원형 체크 */}
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
-                      {sub.checked ? (
-                        <>
-                          <circle cx="7" cy="7" r="6.5" fill="var(--color-brand-green-400)" />
-                          <path d="M4 7l2 2 4-4" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                        </>
-                      ) : (
-                        <circle cx="7" cy="7" r="6.5" stroke="rgba(255,255,255,0.25)" />
-                      )}
-                    </svg>
-                    {/* 자료명 + 페이지 한 span — 취소선 끊김 없음 */}
+                    <CircleCheck checked={sub.checked} />
                     <span className={`text-xs leading-none ${sub.checked ? "line-through text-white/30" : "text-white/55"}`}>
                       {sub.material} {sub.pages}
                     </span>
@@ -120,10 +204,70 @@ export default function StudyPanel() {
             </div>
           );
         })}
+
+        {/* 인라인 추가 카드 */}
+        {isAdding && (
+          <div
+            className="flex flex-col rounded-xl px-4 py-3 gap-2.5"
+            style={{ background: "#3a3a3a" }}
+          >
+            <div className="flex items-center justify-between">
+              <input
+                ref={subjectRef}
+                value={draftSubject}
+                onChange={e => setDraftSubject(e.target.value)}
+                onKeyDown={e => {
+                  if (e.nativeEvent.isComposing) return;
+                  if (e.key === "Enter") { e.preventDefault(); materialRefs.current[0]?.focus(); }
+                  if (e.key === "Escape") cancelAdd();
+                }}
+                placeholder="과목명"
+                className="bg-transparent text-sm font-medium text-white placeholder:text-white/25 outline-none flex-1"
+              />
+              <button onClick={cancelAdd} className="text-white/30 hover:text-white/60 transition-colors text-base leading-none ml-2">×</button>
+            </div>
+
+            <div className="flex flex-col gap-1.5 pl-0.5">
+              {draftSubs.map((sub, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <CircleEmpty />
+                  <input
+                    ref={el => { materialRefs.current[i] = el; }}
+                    value={sub.material}
+                    onChange={e => updateDraftSub(i, "material", e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === "Enter") { e.preventDefault(); pagesRefs.current[i]?.focus(); }
+                    }}
+                    placeholder="자료명"
+                    className="bg-transparent text-xs text-white/70 placeholder:text-white/25 outline-none w-16"
+                  />
+                  <input
+                    ref={el => { pagesRefs.current[i] = el; }}
+                    value={sub.pages}
+                    onChange={e => updateDraftSub(i, "pages", e.target.value)}
+                    onKeyDown={e => {
+                      if (e.nativeEvent.isComposing) return;
+                      if (e.key === "Enter") { e.preventDefault(); addDraftRow(i + 1); }
+                    }}
+                    placeholder="범위 · 내용"
+                    className="bg-transparent text-xs text-white/50 placeholder:text-white/20 outline-none flex-1"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={confirmAdd}
+              className="text-xs text-brand-green-400 hover:opacity-70 transition-opacity text-left pl-5 pt-0.5"
+            >
+              저장
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="flex justify-end">
-        <button className="hover:opacity-70 transition-opacity">
+        <button onClick={startAdding} className="hover:opacity-70 transition-opacity">
           <Image src="/images/icon/plus.svg" alt="추가" width={24} height={24} />
         </button>
       </div>

@@ -1,6 +1,6 @@
-import Link from "next/link";
 import MainNav from "@/components/common/MainNav";
 import ProfileEditForm from "@/features/profile/components/ProfileEditForm";
+import BackButton from "@/components/ui/BackButton";
 
 export default function ProfileEditPage() {
   return (
@@ -10,15 +10,7 @@ export default function ProfileEditPage() {
         <div className="w-full max-w-[1080px] flex flex-col min-h-0 px-6 py-6 gap-5">
 
           {/* 뒤로가기 */}
-          <Link
-            href="/profile"
-            className="flex items-center gap-1.5 text-white/60 hover:text-white text-sm transition-colors w-fit"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            뒤로가기
-          </Link>
+          <BackButton href="/profile" />
 
           {/* 타이틀 */}
           <div className="flex flex-col gap-1.5 shrink-0">

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Button from "@/components/ui/Button";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
 const INPUT_STYLE = {
   height: "46px",
@@ -23,6 +24,7 @@ export default function ProfileEditForm() {
   const [nicknameError, setNicknameError] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -132,7 +134,16 @@ export default function ProfileEditForm() {
           />
         </Field>
 
-        <Button>저장</Button>
+        <Button onClick={() => setShowConfirm(true)}>저장</Button>
+
+        {showConfirm && (
+          <ConfirmModal
+            title="프로필을 저장하시겠습니까?"
+            description="닉네임과 학교명이 변경됩니다."
+            onConfirm={() => setShowConfirm(false)}
+            onCancel={() => setShowConfirm(false)}
+          />
+        )}
 
       </div>
     </div>

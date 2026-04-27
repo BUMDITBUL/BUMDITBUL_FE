@@ -1,7 +1,7 @@
-import Link from "next/link";
 import MainNav from "@/components/common/MainNav";
 import ExamRangeForm from "@/features/profile/components/ExamRangeForm";
-import Button from "@/components/ui/Button";
+import SaveButton from "@/components/ui/SaveButton";
+import BackButton from "@/components/ui/BackButton";
 
 export default function ExamRangePage() {
   return (
@@ -10,21 +10,7 @@ export default function ExamRangePage() {
       <div className="flex-1 min-h-0 flex justify-center overflow-hidden">
         <div className="w-full max-w-[1080px] flex flex-col min-h-0 px-6 py-6 gap-5">
           {/* 뒤로가기 */}
-          <Link
-            href="/profile"
-            className="flex items-center gap-1.5 text-white/60 hover:text-white text-sm transition-colors w-fit"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path
-                d="M10 3L5 8l5 5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            뒤로가기
-          </Link>
+          <BackButton href="/profile" />
 
           {/* 타이틀 */}
           <div className="flex flex-col gap-1.5 shrink-0">
@@ -101,7 +87,10 @@ export default function ExamRangePage() {
                 </ul>
               </div>
 
-              <Button>저장</Button>
+              <SaveButton
+                title="시험 범위를 저장하시겠습니까?"
+                description="저장된 범위를 바탕으로 학습 플랜이 생성됩니다."
+              />
             </div>
           </div>
         </div>
