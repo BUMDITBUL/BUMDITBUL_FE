@@ -88,7 +88,7 @@ export default function LoginForm() {
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
           <div className="flex-1 h-px bg-white/55" />
-          <span className="text-xs text-white/55">sns로 로그인</span>
+          <span className="text-xs text-white/55">sns로 시작하기</span>
           <div className="flex-1 h-px bg-white/55" />
         </div>
         <Button variant="outline">
