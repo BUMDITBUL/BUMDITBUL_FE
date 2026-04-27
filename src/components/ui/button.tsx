@@ -1,10 +1,10 @@
-
 interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
   variant?: "primary" | "outline";
   fullWidth?: boolean;
+  className?: string;
 }
 
 export default function Button({
@@ -13,6 +13,7 @@ export default function Button({
   type = "button",
   variant = "primary",
   fullWidth = true,
+  className = "",
 }: ButtonProps) {
   if (variant === "outline") {
     return (
@@ -21,7 +22,7 @@ export default function Button({
         onClick={onClick}
         className={`${
           fullWidth ? "w-full" : "flex-1"
-        } flex items-center justify-center gap-2 text-white/55 text-sm transition-colors hover:bg-white/5`}
+        } flex items-center justify-center gap-2 text-white/55 text-sm transition-colors hover:bg-white/5 ${className}`}
         style={{
           height: "46px",
           border: "1px solid rgba(255, 255, 255, 0.55)",
@@ -39,7 +40,7 @@ export default function Button({
       onClick={onClick}
       className={`${
         fullWidth ? "w-full" : "flex-1"
-      } text-white text-sm font-medium transition-colors hover:opacity-90 bg-brand-green-400`}
+      } text-white text-sm font-medium transition-colors hover:opacity-90 bg-brand-green-400 ${className}`}
       style={{
         height: "46px",
         borderRadius: "14px",
