@@ -27,6 +27,7 @@
 
   --color-brand-error: #ff3737;
 
+<<<<<<< HEAD
   /* Font Family */
   --font-family-sans: "Wanted Sans Variable", "Wanted Sans", sans-serif;
 
@@ -35,6 +36,13 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+=======
+  /* 서피스 색상 */
+  --color-surface: #2d2d2d;
+  --color-surface-elevated: #3a3a3a;
+  --color-surface-sunken: #252525;
+  --color-select-bg: #2a2a2a;
+>>>>>>> 583d98f (refactor: 하드코딩 제거 및 클린코드 적용)
 }
 
 * {

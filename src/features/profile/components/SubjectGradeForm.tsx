@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import ErrorMessage from "@/components/ui/ErrorMessage";
+import { LONG_PRESS_DURATION, DELETE_ANIMATION_DURATION } from "@/constants/config";
 
 const DEFAULT_SUBJECTS = [""];
 const DEFAULT_SET = new Set(DEFAULT_SUBJECTS);
@@ -20,13 +21,11 @@ type Subject = {
 
 interface SubjectGradeFormProps {
   onChange?: (subjects: Subject[]) => void;
-  onSubmit?: (subjects: Subject[]) => void;
   initialSubjects?: Subject[];
 }
 
 export default function SubjectGradeForm({
   onChange,
-  onSubmit,
   initialSubjects,
 }: SubjectGradeFormProps = {}) {
   const subjectIdCounter = useRef(DEFAULT_SUBJECTS.length);
@@ -141,8 +140,8 @@ export default function SubjectGradeForm({
 
       deleteTimer.current = setTimeout(() => {
         handleDelete(id);
-      }, 150);
-    }, 500);
+      }, DELETE_ANIMATION_DURATION);
+    }, LONG_PRESS_DURATION);
   };
 
   const handleLongPressEnd = () => {
@@ -251,7 +250,7 @@ export default function SubjectGradeForm({
           }}
         >
           {levels.map((level) => (
-            <option key={level} value={level} style={{ backgroundColor: "#2a2a2a" }}>
+            <option key={level} value={level} style={{ backgroundColor: "var(--color-select-bg)" }}>
               {level}
             </option>
           ))}

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { LONG_PRESS_DURATION, DELETE_ANIMATION_DURATION } from "@/constants/config";
 
 type SubItem = {
   id: number;
@@ -109,8 +110,8 @@ export default function StudyPanel() {
         setItems(prev => prev.filter(i => i.id !== itemId));
         setRemovingId(null);
         isLongPress.current = false;
-      }, 200);
-    }, 500);
+      }, DELETE_ANIMATION_DURATION);
+    }, LONG_PRESS_DURATION);
   };
 
   const handleLongPressEnd = () => {
@@ -174,7 +175,7 @@ export default function StudyPanel() {
   return (
     <div
       className="flex flex-col gap-4 rounded-2xl p-6 shrink-0 h-full"
-      style={{ width: "360px", background: "#2d2d2d" }}
+      style={{ width: "360px", background: "var(--color-surface)" }}
     >
       <h2 className="text-white font-semibold text-base">오늘 할 공부</h2>
 
@@ -185,7 +186,7 @@ export default function StudyPanel() {
             <div
               key={item.id}
               className="flex flex-col rounded-xl px-4 py-3 gap-2.5 transition-opacity duration-200 select-none"
-              style={{ background: "#3a3a3a", opacity: removingId === item.id ? 0 : 1 }}
+              style={{ background: "var(--color-surface-elevated)", opacity: removingId === item.id ? 0 : 1 }}
               onPointerDown={() => handleLongPressStart(item.id)}
               onPointerUp={handleLongPressEnd}
               onPointerLeave={handleLongPressEnd}
@@ -229,7 +230,7 @@ export default function StudyPanel() {
         {isAdding && (
           <div
             className="flex flex-col rounded-xl px-4 py-3 gap-2.5"
-            style={{ background: "#3a3a3a" }}
+            style={{ background: "var(--color-surface-elevated)" }}
           >
             <div className="flex items-center justify-between">
               <input

@@ -43,7 +43,7 @@ export default function ExamRangePage() {
               {/* 알림 사항 */}
               <div
                 className="rounded-2xl p-5 flex flex-col gap-4"
-                style={{ background: "#2d2d2d" }}
+                style={{ background: "var(--color-surface)" }}
               >
                 <div className="flex items-center gap-2">
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none">

@@ -64,7 +64,7 @@ export default function ConfirmModal({
         aria-labelledby={titleId.current}
         aria-describedby={description ? descId.current : undefined}
         className="flex flex-col gap-6 rounded-2xl p-8 w-full"
-        style={{ maxWidth: "380px", background: "#2d2d2d" }}
+        style={{ maxWidth: "380px", background: "var(--color-surface)" }}
         onClick={e => e.stopPropagation()}
       >
         <div className="flex flex-col gap-2">

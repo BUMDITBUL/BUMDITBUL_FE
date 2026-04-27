@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { MOCK_USER } from "@/constants/mockData";
 
 function PencilIcon() {
   return (
@@ -39,7 +40,7 @@ interface ProfileSidebarProps {
   handle?: string;
 }
 
-export default function ProfileSidebar({ username = "bbibbaroni", handle = "bbibbaroni" }: ProfileSidebarProps) {
+export default function ProfileSidebar({ username = MOCK_USER.nickname, handle = MOCK_USER.nickname }: ProfileSidebarProps) {
   return (
     <div className="flex flex-col items-center gap-6 shrink-0" style={{ width: "280px" }}>
       {/* 프로필 이미지 */}
@@ -59,7 +60,7 @@ export default function ProfileSidebar({ username = "bbibbaroni", handle = "bbib
       {/* 이름 + 핸들 */}
       <div className="flex flex-col items-center gap-1">
         <span className="text-white font-bold text-xl">{username}</span>
-        <span className="text-sm" style={{ color: "#9e9e9e" }}>@{handle}</span>
+        <span className="text-sm text-brand-black-500">@{handle}</span>
       </div>
 
       {/* 버튼 영역 */}

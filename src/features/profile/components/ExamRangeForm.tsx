@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ErrorMessage from "@/components/ui/ErrorMessage";
+import { LONG_PRESS_DURATION, DELETE_ANIMATION_DURATION } from "@/constants/config";
 
 const MAX_SUBJECTS = 9;
 const MAX_NAME_LENGTH = 12;
@@ -125,7 +126,7 @@ function DatePicker({ value, onChange, onClose }: {
     <div
       ref={ref}
       className="absolute top-full left-0 mt-1 z-30 rounded-2xl p-4"
-      style={{ background: "#252525", boxShadow: "0 8px 32px rgba(0,0,0,0.5)", minWidth: "268px" }}
+      style={{ background: "var(--color-surface-sunken)", boxShadow: "0 8px 32px rgba(0,0,0,0.5)", minWidth: "268px" }}
     >
       {/* 월 네비 */}
       <div className="flex items-center justify-between mb-3">
@@ -335,8 +336,8 @@ export default function ExamRangeForm() {
         setRemovingId(null);
         setMaxReached(false);
         setDuplicateError(false);
-      }, 200);
-    }, 500);
+      }, DELETE_ANIMATION_DURATION);
+    }, LONG_PRESS_DURATION);
   };
 
   const handleLongPressEnd = () => {
@@ -384,7 +385,7 @@ export default function ExamRangeForm() {
   const handlePickerClose = useCallback(() => setOpenPickerId(null), []);
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 rounded-2xl overflow-hidden" style={{ background: "#2d2d2d" }}>
+    <div className="flex flex-col flex-1 min-h-0 rounded-2xl overflow-hidden" style={{ background: "var(--color-surface)" }}>
       <p className="text-white/30 text-xs px-6 pt-5 shrink-0">과목명을 길게 누르면 삭제됩니다.</p>
 
       <div className="flex-1 overflow-y-auto px-6">
@@ -486,7 +487,7 @@ export default function ExamRangeForm() {
                 style={{ ...INPUT_BASE, width: "72px", backgroundColor: "transparent" }}
               >
                 {DIFFICULTIES.map(d => (
-                  <option key={d} value={d} style={{ backgroundColor: "#2a2a2a" }}>{d}</option>
+                  <option key={d} value={d} style={{ backgroundColor: "var(--color-select-bg)" }}>{d}</option>
                 ))}
               </select>
               <Image

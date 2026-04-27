@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Button from "@/components/ui/button";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import { MOCK_USER } from "@/constants/mockData";
 
 const INPUT_STYLE = {
   height: "46px",
@@ -27,11 +28,11 @@ interface ProfileEditFormProps {
 }
 
 export default function ProfileEditForm({
-  initialNickname = "bbibbaroni",
-  initialSchool = "",
+  initialNickname = MOCK_USER.nickname,
+  initialSchool = MOCK_USER.school,
   initialProfileImage = null,
   onSave,
-}: ProfileEditFormProps) {
+}: ProfileEditFormProps = {}) {
   const [nickname, setNickname] = useState(initialNickname);
   const [school, setSchool] = useState(initialSchool);
   const [nicknameError, setNicknameError] = useState("");
