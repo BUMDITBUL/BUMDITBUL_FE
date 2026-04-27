@@ -1,6 +1,14 @@
 import Image from "next/image";
 
+function getDdayLabel() {
+  const today = new Date();
+  const exam = new Date(2026, 4, 11);
+  const diff = Math.ceil((exam.getTime() - new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()) / 86400000);
+  return diff > 0 ? `D-${diff}` : diff === 0 ? "D-Day" : `D+${Math.abs(diff)}`;
+}
+
 export default function HeroBanner() {
+  const ddayLabel = getDdayLabel();
   return (
     <div className="relative overflow-hidden shrink-0" style={{ height: "35vh" }}>
       <Image
@@ -14,6 +22,19 @@ export default function HeroBanner() {
         style={{ objectPosition: "50% 20%" }}
       />
       <div className="absolute inset-0 bg-black/25" />
+      {/* D-day 카드 */}
+      <div
+        className="absolute top-6 right-10 flex flex-col items-center gap-1 px-6 py-4 rounded-2xl"
+        style={{
+          background: "rgba(255,255,255,0.12)",
+          backdropFilter: "blur(12px)",
+          border: "1px solid rgba(255,255,255,0.25)",
+        }}
+      >
+        <span className="text-white/70 text-xs font-medium tracking-wide">시험까지</span>
+        <span className="text-white font-bold" style={{ fontSize: "36px", lineHeight: 1 }}>{ddayLabel}</span>
+      </div>
+
       <div className="absolute bottom-8 left-10 flex flex-col gap-3">
         <h2
           style={{
