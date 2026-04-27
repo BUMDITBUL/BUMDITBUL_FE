@@ -26,9 +26,10 @@ export default function HeroBanner() {
       <div
         className="absolute top-6 right-10 flex flex-col items-center gap-1 px-6 py-4 rounded-2xl"
         style={{
-          background: "rgba(255,255,255,0.12)",
-          backdropFilter: "blur(12px)",
-          border: "1px solid rgba(255,255,255,0.25)",
+          background: "linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.04) 60%, rgba(255,255,255,0.08) 100%)",
+          backdropFilter: "blur(2px)",
+          border: "1px solid rgba(255,255,255,0.35)",
+          boxShadow: "inset 0 1.5px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(255,255,255,0.08), 0 8px 32px rgba(0,0,0,0.2)",
         }}
       >
         <span className="text-white/70 text-xs font-medium tracking-wide">시험까지</span>
