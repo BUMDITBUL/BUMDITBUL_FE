@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginFormValues } from "@/features/auth/schemas/auth.schema";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Input from "@/components/ui/Input";
-import Button from "@/components/ui/button";
+import Button from "@/components/ui/Button";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);

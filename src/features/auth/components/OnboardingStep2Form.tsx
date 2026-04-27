@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
-import Button from "@/components/ui/button";
+import Button from "@/components/ui/Button";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 
 const DEFAULT_SUBJECTS = [""];
