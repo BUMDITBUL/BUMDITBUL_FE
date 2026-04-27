@@ -1,7 +1,7 @@
 "use client";
 
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import { LONG_PRESS_DURATION, DELETE_ANIMATION_DURATION } from "@/constants/config";
 
@@ -97,14 +97,14 @@ function DatePicker({ value, onChange, onClose }: {
   const isToday = (day: number, type: string) =>
     type === "current" && day === today.getDate() && viewYear === today.getFullYear() && viewMonth === today.getMonth();
 
-  const handleSelect = (day: number, type: string) => {
+  const handleSelect = (day: number, _type: string) => {
     const m = String(viewMonth + 1).padStart(2, "0");
     const d = String(day).padStart(2, "0");
     onChange(`${viewYear}.${m}.${d}`);
     onClose();
   };
 
-  const goToMonthAndSelect = (day: number, type: "prev" | "next") => {
+  const goToMonthAndSelect = (_day: number, type: "prev" | "next") => {
     if (type === "prev") {
       if (viewMonth === 0) {
         setViewYear(y => y - 1);
