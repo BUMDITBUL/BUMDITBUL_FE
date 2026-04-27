@@ -27,14 +27,19 @@ function EditButton({ label, href }: { label: string; href?: string }) {
     );
   }
   return (
-    <button className={className} style={style}>
+    <button type="button" className={className} style={style}>
       {label}
       <PencilIcon />
     </button>
   );
 }
 
-export default function ProfileSidebar() {
+interface ProfileSidebarProps {
+  username?: string;
+  handle?: string;
+}
+
+export default function ProfileSidebar({ username = "bbibbaroni", handle = "bbibbaroni" }: ProfileSidebarProps) {
   return (
     <div className="flex flex-col items-center gap-6 shrink-0" style={{ width: "280px" }}>
       {/* 프로필 이미지 */}
@@ -53,8 +58,8 @@ export default function ProfileSidebar() {
 
       {/* 이름 + 핸들 */}
       <div className="flex flex-col items-center gap-1">
-        <span className="text-white font-bold text-xl">bbibbaroni</span>
-        <span className="text-sm" style={{ color: "#9e9e9e" }}>@bbibbaroni</span>
+        <span className="text-white font-bold text-xl">{username}</span>
+        <span className="text-sm" style={{ color: "#9e9e9e" }}>@{handle}</span>
       </div>
 
       {/* 버튼 영역 */}

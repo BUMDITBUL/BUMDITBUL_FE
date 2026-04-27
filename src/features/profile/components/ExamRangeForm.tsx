@@ -22,8 +22,6 @@ type Subject = {
   nameEdited: boolean;
 };
 
-let subjectIdCounter = 1;
-
 const DEFAULT_SUBJECTS: Subject[] = [
   { id: 0, name: "", startPage: "", endPage: "", date: "", difficulty: "중", materials: [], nameEdited: false },
 ];
@@ -48,7 +46,12 @@ function DatePicker({ value, onChange, onClose }: {
   onClose: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
   const today = new Date();
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   const parseSelected = () => {
     const parts = value.split(".");
@@ -65,12 +68,12 @@ function DatePicker({ value, onChange, onClose }: {
   const [viewMonth, setViewMonth] = useState(init.getMonth());
 
   useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    function handleClick(e: PointerEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onCloseRef.current();
     }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [onClose]);
+    document.addEventListener("pointerdown", handleClick, { passive: true });
+    return () => document.removeEventListener("pointerdown", handleClick);
+  }, []);
 
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
   const firstDay = new Date(viewYear, viewMonth, 1).getDay();
@@ -93,11 +96,29 @@ function DatePicker({ value, onChange, onClose }: {
   const isToday = (day: number, type: string) =>
     type === "current" && day === today.getDate() && viewYear === today.getFullYear() && viewMonth === today.getMonth();
 
-  const handleSelect = (day: number) => {
+  const handleSelect = (day: number, type: string) => {
     const m = String(viewMonth + 1).padStart(2, "0");
     const d = String(day).padStart(2, "0");
     onChange(`${viewYear}.${m}.${d}`);
     onClose();
+  };
+
+  const goToMonthAndSelect = (day: number, type: "prev" | "next") => {
+    if (type === "prev") {
+      if (viewMonth === 0) {
+        setViewYear(y => y - 1);
+        setViewMonth(11);
+      } else {
+        setViewMonth(m => m - 1);
+      }
+    } else {
+      if (viewMonth === 11) {
+        setViewYear(y => y + 1);
+        setViewMonth(0);
+      } else {
+        setViewMonth(m => m + 1);
+      }
+    }
   };
 
   return (
@@ -135,8 +156,13 @@ function DatePicker({ value, onChange, onClose }: {
             return (
               <div key={ci} className="flex items-center justify-center py-0.5">
                 <button
-                  onClick={() => cell.type === "current" && handleSelect(cell.day)}
-                  disabled={cell.type !== "current"}
+                  onClick={() => {
+                    if (cell.type === "current") {
+                      handleSelect(cell.day, "current");
+                    } else {
+                      goToMonthAndSelect(cell.day, cell.type);
+                    }
+                  }}
                   className={[
                     "w-8 h-8 rounded-full flex items-center justify-center text-xs transition-colors",
                     cell.type !== "current" ? "text-white/15 cursor-default" : "",
@@ -249,7 +275,7 @@ function MaterialTagInput({ tags, onChange }: { tags: string[]; onChange: (tags:
   );
 }
 
-// 메인 폼 
+// 메인 폼
 export default function ExamRangeForm() {
   const [subjects, setSubjects] = useState<Subject[]>(DEFAULT_SUBJECTS);
   const [inputWidths, setInputWidths] = useState<Record<number, number>>({ 0: getNameWidth("") });
@@ -260,27 +286,33 @@ export default function ExamRangeForm() {
   const [focusedNameId, setFocusedNameId] = useState<number | null>(null);
   const [openPickerId, setOpenPickerId] = useState<number | null>(null);
 
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const subjectIdCounter = useRef(1);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const removeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLongPress = useRef(false);
   const nameRefs = useRef<Record<number, HTMLInputElement | null>>({});
-  const prevNames = useRef<Record<number, string>>({ 0: "" });
+  const prevNames = useRef<Record<string | number, string>>({ 0: "" });
+
+  const handleNameChange = (index: number, value: string) => {
+    const id = subjects[index].id;
+    setInputWidths(prev => ({ ...prev, [id]: getNameWidth(value) }));
+    setSubjects(prev => prev.map((s, i) => i === index ? { ...s, name: value } : s));
+  };
 
   const handleNameBlur = (index: number) => {
     const id = subjects[index].id;
-    const value = nameRefs.current[id]?.value.trim();
-    if (value === undefined) return;
+    const value = subjects[index].name.trim();
     const newName = value || prevNames.current[id];
     const isDup = subjects.some((s, i) => i !== index && s.name === newName && newName !== "");
     if (isDup) {
       setDuplicateError(true);
-      if (nameRefs.current[id]) nameRefs.current[id]!.value = prevNames.current[id];
+      setSubjects(prev => prev.map((s, i) => i === index ? { ...s, name: prevNames.current[id] } : s));
       setInputWidths(prev => ({ ...prev, [id]: getNameWidth(prevNames.current[id]) }));
       return;
     }
     setDuplicateError(false);
     prevNames.current[id] = newName;
     setSubjects(prev => prev.map((s, i) => i === index ? { ...s, name: newName, nameEdited: true } : s));
-    if (nameRefs.current[id]) nameRefs.current[id]!.value = newName;
     setInputWidths(prev => ({ ...prev, [id]: getNameWidth(newName) }));
     setFocusedNameId(null);
   };
@@ -295,7 +327,7 @@ export default function ExamRangeForm() {
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
       setRemovingId(id);
-      setTimeout(() => {
+      removeTimerRef.current = setTimeout(() => {
         delete nameRefs.current[id];
         delete prevNames.current[id];
         setSubjects(prev => prev.filter((_, i) => i !== index));
@@ -309,12 +341,26 @@ export default function ExamRangeForm() {
 
   const handleLongPressEnd = () => {
     setIsPressingUI(false);
-    if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null; }
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+    if (removeTimerRef.current) {
+      clearTimeout(removeTimerRef.current);
+      removeTimerRef.current = null;
+    }
   };
+
+  useEffect(() => {
+    return () => {
+      if (longPressTimer.current) clearTimeout(longPressTimer.current);
+      if (removeTimerRef.current) clearTimeout(removeTimerRef.current);
+    };
+  }, []);
 
   const handleAdd = () => {
     if (subjects.length >= MAX_SUBJECTS) { setMaxReached(true); return; }
-    const newId = subjectIdCounter++;
+    const newId = subjectIdCounter.current++;
     setMaxReached(false);
     setDuplicateError(false);
     prevNames.current[newId] = "";
@@ -324,6 +370,16 @@ export default function ExamRangeForm() {
 
   const update = (index: number, field: Partial<Subject>) =>
     setSubjects(prev => prev.map((s, i) => i === index ? { ...s, ...field } : s));
+
+  const handleDateBlur = (index: number) => {
+    const dateValue = subjects[index].date;
+    const dateRegex = /^\d{4}\.\d{2}\.\d{2}$/;
+    if (dateValue && !dateRegex.test(dateValue)) {
+      update(index, { date: prevNames.current[subjects[index].id + "_date"] || "" });
+    } else if (dateValue) {
+      prevNames.current[subjects[index].id + "_date"] = dateValue;
+    }
+  };
 
   const handlePickerClose = useCallback(() => setOpenPickerId(null), []);
 
@@ -342,10 +398,10 @@ export default function ExamRangeForm() {
             {/* 과목명 — 동적 너비, 꾹 누르면 삭제 */}
             <input
               ref={el => { nameRefs.current[subject.id] = el; }}
-              defaultValue={subject.name}
+              value={subject.name}
               placeholder="과목명"
               maxLength={MAX_NAME_LENGTH}
-              onChange={e => setInputWidths(prev => ({ ...prev, [subject.id]: getNameWidth(e.target.value) }))}
+              onChange={e => handleNameChange(index, e.target.value)}
               onBlur={() => handleNameBlur(index)}
               onFocus={e => {
                 if (isLongPress.current) { e.target.blur(); return; }
@@ -395,6 +451,7 @@ export default function ExamRangeForm() {
                   type="text"
                   value={subject.date}
                   onChange={e => update(index, { date: e.target.value })}
+                  onBlur={() => handleDateBlur(index)}
                   placeholder="YYYY.MM.DD"
                   maxLength={10}
                   className="bg-transparent outline-none w-24 text-white/80 placeholder:text-white/30 text-sm"

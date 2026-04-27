@@ -20,7 +20,7 @@ export default function MainCalendar() {
 
   const [viewYear, setViewYear] = useState(todayY);
   const [viewMonth, setViewMonth] = useState(todayM);
-  const [selectedDay, setSelectedDay] = useState(todayD);
+  const [selectedDay, setSelectedDay] = useState(new Date(todayY, todayM, todayD));
 
   const daysInMonth = getDaysInMonth(viewYear, viewMonth);
   const firstDay = getFirstDayOfMonth(viewYear, viewMonth);
@@ -57,7 +57,7 @@ export default function MainCalendar() {
     type === "current" && day === todayD && viewYear === todayY && viewMonth === todayM;
 
   const isSelected = (day: number, type: string) =>
-    type === "current" && day === selectedDay && viewYear === todayY && viewMonth === todayM;
+    type === "current" && day === selectedDay.getDate() && viewYear === selectedDay.getFullYear() && viewMonth === selectedDay.getMonth();
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3">
@@ -98,7 +98,7 @@ export default function MainCalendar() {
               return (
                 <div key={ci} className="flex items-center justify-center">
                   <button
-                    onClick={() => cell.type === "current" && setSelectedDay(cell.day)}
+                    onClick={() => cell.type === "current" && setSelectedDay(new Date(viewYear, viewMonth, cell.day))}
                     disabled={cell.type !== "current"}
                     className={[
                       "w-10 h-10 rounded-full flex items-center justify-center text-sm transition-colors",

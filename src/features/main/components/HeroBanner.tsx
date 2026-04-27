@@ -1,14 +1,19 @@
 import Image from "next/image";
+import { EXAM_DATE } from "../constants";
 
-function getDdayLabel() {
+function getDdayLabel(examDate: Date) {
   const today = new Date();
-  const exam = new Date(2026, 4, 11);
+  const exam = examDate;
   const diff = Math.ceil((exam.getTime() - new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()) / 86400000);
   return diff > 0 ? `D-${diff}` : diff === 0 ? "D-Day" : `D+${Math.abs(diff)}`;
 }
 
-export default function HeroBanner() {
-  const ddayLabel = getDdayLabel();
+interface HeroBannerProps {
+  examDate?: Date;
+}
+
+export default function HeroBanner({ examDate = EXAM_DATE }: HeroBannerProps = {}) {
+  const ddayLabel = getDdayLabel(examDate);
   return (
     <div className="relative overflow-hidden shrink-0" style={{ height: "35vh" }}>
       <Image

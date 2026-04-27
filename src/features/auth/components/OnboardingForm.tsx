@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { onboardingSchema, type OnboardingFormValues } from "@/features/auth/schemas/auth.schema";
 import Input from "@/components/ui/Input";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/button";
 
 export default function OnboardingForm() {
   const router = useRouter();

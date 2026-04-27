@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 type SubItem = {
@@ -41,9 +41,6 @@ const initialItems: StudyItem[] = [
   },
 ];
 
-let itemIdCounter = 10;
-let subIdCounter = 100;
-
 function CircleEmpty() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
@@ -73,12 +70,16 @@ export default function StudyPanel() {
   const [isAdding, setIsAdding] = useState(false);
   const [draftSubject, setDraftSubject] = useState("");
   const [draftSubs, setDraftSubs] = useState<DraftSub[]>([{ material: "", pages: "" }]);
+  const [subjectError, setSubjectError] = useState(false);
 
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const itemIdCounter = useRef(10);
+  const subIdCounter = useRef(100);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const removalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLongPress = useRef(false);
   const subjectRef = useRef<HTMLInputElement>(null);
-  const materialRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const pagesRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const materialRefs = useRef<Map<string | number, HTMLInputElement | null>>(new Map());
+  const pagesRefs = useRef<Map<string | number, HTMLInputElement | null>>(new Map());
 
   const toggleSub = (itemId: number, subId: number) => {
     if (isLongPress.current) return;
@@ -104,7 +105,7 @@ export default function StudyPanel() {
     longPressTimer.current = setTimeout(() => {
       isLongPress.current = true;
       setRemovingId(itemId);
-      setTimeout(() => {
+      removalTimerRef.current = setTimeout(() => {
         setItems(prev => prev.filter(i => i.id !== itemId));
         setRemovingId(null);
         isLongPress.current = false;
@@ -117,13 +118,25 @@ export default function StudyPanel() {
       clearTimeout(longPressTimer.current);
       longPressTimer.current = null;
     }
+    if (removalTimerRef.current) {
+      clearTimeout(removalTimerRef.current);
+      removalTimerRef.current = null;
+    }
   };
+
+  useEffect(() => {
+    return () => {
+      if (longPressTimer.current) clearTimeout(longPressTimer.current);
+      if (removalTimerRef.current) clearTimeout(removalTimerRef.current);
+    };
+  }, []);
 
   const startAdding = () => {
     setDraftSubject("");
     setDraftSubs([{ material: "", pages: "" }]);
+    setSubjectError(false);
     setIsAdding(true);
-    setTimeout(() => subjectRef.current?.focus(), 50);
+    requestAnimationFrame(() => subjectRef.current?.focus());
   };
 
   const updateDraftSub = (i: number, field: keyof DraftSub, value: string) => {
@@ -132,16 +145,20 @@ export default function StudyPanel() {
 
   const addDraftRow = (focusIndex: number) => {
     setDraftSubs(prev => [...prev, { material: "", pages: "" }]);
-    setTimeout(() => materialRefs.current[focusIndex]?.focus(), 50);
+    requestAnimationFrame(() => materialRefs.current.get(focusIndex)?.focus());
   };
 
   const confirmAdd = () => {
     const subject = draftSubject.trim();
-    if (!subject) { cancelAdd(); return; }
+    if (!subject) {
+      setSubjectError(true);
+      return;
+    }
+    setSubjectError(false);
     const subItems = draftSubs
       .filter(s => s.material.trim())
-      .map(s => ({ id: subIdCounter++, material: s.material.trim(), pages: s.pages.trim(), checked: false }));
-    setItems(prev => [...prev, { id: itemIdCounter++, subject, subItems }]);
+      .map(s => ({ id: subIdCounter.current++, material: s.material.trim(), pages: s.pages.trim(), checked: false }));
+    setItems(prev => [...prev, { id: itemIdCounter.current++, subject, subItems }]);
     cancelAdd();
   };
 
@@ -149,6 +166,9 @@ export default function StudyPanel() {
     setIsAdding(false);
     setDraftSubject("");
     setDraftSubs([{ material: "", pages: "" }]);
+    setSubjectError(false);
+    materialRefs.current.clear();
+    pagesRefs.current.clear();
   };
 
   return (
@@ -218,7 +238,7 @@ export default function StudyPanel() {
                 onChange={e => setDraftSubject(e.target.value)}
                 onKeyDown={e => {
                   if (e.nativeEvent.isComposing) return;
-                  if (e.key === "Enter") { e.preventDefault(); materialRefs.current[0]?.focus(); }
+                  if (e.key === "Enter") { e.preventDefault(); materialRefs.current.get(0)?.focus(); }
                   if (e.key === "Escape") cancelAdd();
                 }}
                 placeholder="과목명"
@@ -232,17 +252,18 @@ export default function StudyPanel() {
                 <div key={i} className="flex items-center gap-2">
                   <CircleEmpty />
                   <input
-                    ref={el => { materialRefs.current[i] = el; }}
+                    ref={el => { materialRefs.current.set(i, el); }}
                     value={sub.material}
                     onChange={e => updateDraftSub(i, "material", e.target.value)}
                     onKeyDown={e => {
-                      if (e.key === "Enter") { e.preventDefault(); pagesRefs.current[i]?.focus(); }
+                      if (e.nativeEvent.isComposing) return;
+                      if (e.key === "Enter") { e.preventDefault(); pagesRefs.current.get(i)?.focus(); }
                     }}
                     placeholder="자료명"
                     className="bg-transparent text-xs text-white/70 placeholder:text-white/25 outline-none w-16"
                   />
                   <input
-                    ref={el => { pagesRefs.current[i] = el; }}
+                    ref={el => { pagesRefs.current.set(i, el); }}
                     value={sub.pages}
                     onChange={e => updateDraftSub(i, "pages", e.target.value)}
                     onKeyDown={e => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface ConfirmModalProps {
   title: string;
@@ -19,34 +19,65 @@ export default function ConfirmModal({
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
+  const confirmButtonRef = useRef<HTMLButtonElement>(null);
+  const titleId = useRef(`modal-title-${Math.random().toString(36).substr(2, 9)}`);
+  const descId = useRef(`modal-desc-${Math.random().toString(36).substr(2, 9)}`);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
+    // Save previous focus
+    previousActiveElement.current = document.activeElement as HTMLElement;
+
+    // Lock body scroll
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    // Focus primary action
+    confirmButtonRef.current?.focus();
+
+    // ESC key handler
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onCancel();
     };
     document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
+
+    return () => {
+      // Restore body scroll
+      document.body.style.overflow = previousOverflow;
+
+      // Restore focus
+      previousActiveElement.current?.focus();
+
+      document.removeEventListener("keydown", handler);
+    };
   }, [onCancel]);
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
       style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }}
-      onMouseDown={onCancel}
+      onClick={onCancel}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId.current}
+        aria-describedby={description ? descId.current : undefined}
         className="flex flex-col gap-6 rounded-2xl p-8 w-full"
         style={{ maxWidth: "380px", background: "#2d2d2d" }}
-        onMouseDown={e => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         <div className="flex flex-col gap-2">
-          <h2 className="text-white font-bold text-lg">{title}</h2>
+          <h2 id={titleId.current} className="text-white font-bold text-lg">{title}</h2>
           {description && (
-            <p className="text-white/50 text-sm leading-relaxed">{description}</p>
+            <p id={descId.current} className="text-white/50 text-sm leading-relaxed">{description}</p>
           )}
         </div>
 
         <div className="flex flex-col gap-2.5">
           <button
+            ref={confirmButtonRef}
+            type="button"
             onClick={onConfirm}
             className="w-full text-white text-sm font-medium hover:opacity-90 transition-opacity bg-brand-green-400"
             style={{ height: "46px", borderRadius: "14px" }}
@@ -54,6 +85,7 @@ export default function ConfirmModal({
             {confirmLabel}
           </button>
           <button
+            type="button"
             onClick={onCancel}
             className="w-full text-white/55 text-sm hover:bg-white/5 transition-colors"
             style={{ height: "46px", border: "1px solid rgba(255,255,255,0.55)", borderRadius: "14px" }}

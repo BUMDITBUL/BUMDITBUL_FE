@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
-import Button from "@/components/ui/Button";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import Button from "@/components/ui/button";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 
 const INPUT_STYLE = {
@@ -18,12 +19,25 @@ const INPUT_FOCUS_STYLE = {
   border: "1px solid rgba(255,255,255,0.55)",
 };
 
-export default function ProfileEditForm() {
-  const [nickname, setNickname] = useState("bbibbaroni");
-  const [school, setSchool] = useState("");
+interface ProfileEditFormProps {
+  initialNickname?: string;
+  initialSchool?: string;
+  initialProfileImage?: string | null;
+  onSave?: (data: { nickname: string; school: string; profileImage: string | null }) => void | Promise<void>;
+}
+
+export default function ProfileEditForm({
+  initialNickname = "bbibbaroni",
+  initialSchool = "",
+  initialProfileImage = null,
+  onSave,
+}: ProfileEditFormProps) {
+  const [nickname, setNickname] = useState(initialNickname);
+  const [school, setSchool] = useState(initialSchool);
   const [nicknameError, setNicknameError] = useState("");
   const [focusedField, setFocusedField] = useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(initialProfileImage);
+  const [profileImage, setProfileImage] = useState<string | null>(initialProfileImage);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -43,9 +57,23 @@ export default function ProfileEditForm() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Revoke previous blob URL
+    if (previewUrl && previewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(previewUrl);
+    }
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
+    setProfileImage(url);
   };
+
+  useEffect(() => {
+    // Cleanup blob URLs on unmount
+    return () => {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   return (
     <div className="flex-1 min-w-0 overflow-y-auto">
@@ -59,9 +87,12 @@ export default function ProfileEditForm() {
               className="rounded-full overflow-hidden"
               style={{ width: "100px", height: "100px" }}
             >
-              <img
+              <Image
                 src={previewUrl ?? "/images/icon/default_profile.svg"}
                 alt="프로필"
+                width={100}
+                height={100}
+                unoptimized={previewUrl?.startsWith("blob:") ?? false}
                 style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               />
             </div>
@@ -91,7 +122,11 @@ export default function ProfileEditForm() {
             <button
               type="button"
               onClick={() => {
+                if (previewUrl.startsWith("blob:")) {
+                  URL.revokeObjectURL(previewUrl);
+                }
                 setPreviewUrl(null);
+                setProfileImage(null);
                 if (fileInputRef.current) fileInputRef.current.value = "";
               }}
               className="text-xs text-white/40 hover:text-white/70 transition-colors text-left"
@@ -140,7 +175,10 @@ export default function ProfileEditForm() {
           <ConfirmModal
             title="프로필을 저장하시겠습니까?"
             description="닉네임과 학교명이 변경됩니다."
-            onConfirm={() => setShowConfirm(false)}
+            onConfirm={() => {
+              onSave?.({ nickname, school, profileImage });
+              setShowConfirm(false);
+            }}
             onCancel={() => setShowConfirm(false)}
           />
         )}

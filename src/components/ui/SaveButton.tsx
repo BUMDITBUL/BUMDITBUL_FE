@@ -6,7 +6,7 @@ import ConfirmModal from "./ConfirmModal";
 interface SaveButtonProps {
   title?: string;
   description?: string;
-  onSave?: () => void;
+  onSave: () => void | Promise<void>;
 }
 
 export default function SaveButton({
@@ -15,15 +15,26 @@ export default function SaveButton({
   onSave,
 }: SaveButtonProps) {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleConfirm = () => {
-    setOpen(false);
-    onSave?.();
+  const handleConfirm = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await onSave();
+      setOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "저장에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
       <button
+        type="button"
         onClick={() => setOpen(true)}
         className="w-full text-white text-sm font-medium hover:opacity-90 transition-opacity bg-brand-green-400"
         style={{ height: "46px", borderRadius: "14px" }}
@@ -34,7 +45,7 @@ export default function SaveButton({
       {open && (
         <ConfirmModal
           title={title}
-          description={description}
+          description={error || description}
           onConfirm={handleConfirm}
           onCancel={() => setOpen(false)}
         />

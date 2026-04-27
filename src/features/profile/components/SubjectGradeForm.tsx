@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 
 const DEFAULT_SUBJECTS = [""];
@@ -18,11 +18,20 @@ type Subject = {
   levelEdited: boolean;
 };
 
-let subjectIdCounter = DEFAULT_SUBJECTS.length;
+interface SubjectGradeFormProps {
+  onChange?: (subjects: Subject[]) => void;
+  onSubmit?: (subjects: Subject[]) => void;
+  initialSubjects?: Subject[];
+}
 
-export default function SubjectGradeForm() {
+export default function SubjectGradeForm({
+  onChange,
+  onSubmit,
+  initialSubjects,
+}: SubjectGradeFormProps = {}) {
+  const subjectIdCounter = useRef(DEFAULT_SUBJECTS.length);
   const [subjects, setSubjects] = useState<Subject[]>(
-    DEFAULT_SUBJECTS.map((name, i) => ({
+    initialSubjects ?? DEFAULT_SUBJECTS.map((name, i) => ({
       id: i,
       name,
       level: "중",
@@ -30,6 +39,10 @@ export default function SubjectGradeForm() {
       levelEdited: false,
     }))
   );
+
+  useEffect(() => {
+    onChange?.(subjects);
+  }, [subjects, onChange]);
 
   const [maxReached, setMaxReached] = useState(false);
   const [duplicateError, setDuplicateError] = useState(false);
@@ -43,7 +56,8 @@ export default function SubjectGradeForm() {
     )
   );
 
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const deleteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLongPress = useRef(false);
   const inputRefs = useRef<Record<number, HTMLInputElement | null>>({});
   const prevNames = useRef<Record<number, string>>(
@@ -100,7 +114,7 @@ export default function SubjectGradeForm() {
       return;
     }
 
-    const newId = subjectIdCounter++;
+    const newId = subjectIdCounter.current++;
     setMaxReached(false);
     setDuplicateError(false);
 
@@ -125,8 +139,8 @@ export default function SubjectGradeForm() {
       isLongPress.current = true;
       setRemovingId(id);
 
-      setTimeout(() => {
-        handleDelete(index);
+      deleteTimer.current = setTimeout(() => {
+        handleDelete(id);
       }, 150);
     }, 500);
   };
@@ -137,14 +151,17 @@ export default function SubjectGradeForm() {
       clearTimeout(longPressTimer.current);
       longPressTimer.current = null;
     }
+    if (deleteTimer.current) {
+      clearTimeout(deleteTimer.current);
+      deleteTimer.current = null;
+    }
   };
 
-  const handleDelete = (index: number) => {
-    const id = subjects[index].id;
+  const handleDelete = (id: number) => {
     delete inputRefs.current[id];
     delete prevNames.current[id];
 
-    setSubjects((prev) => prev.filter((_, i) => i !== index));
+    setSubjects((prev) => prev.filter(s => s.id !== id));
     setInputWidths((prev) => {
       const updated = { ...prev };
       delete updated[id];

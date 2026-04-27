@@ -1,9 +1,28 @@
+"use client";
+
+import { useState } from "react";
 import MainNav from "@/components/common/MainNav";
 import SubjectGradeForm from "@/features/profile/components/SubjectGradeForm";
 import SaveButton from "@/components/ui/SaveButton";
 import BackButton from "@/components/ui/BackButton";
 
+type Subject = {
+  id: number;
+  name: string;
+  level: string;
+  nameEdited: boolean;
+  levelEdited: boolean;
+};
+
 export default function SubjectGradePage() {
+  const [currentSubjects, setCurrentSubjects] = useState<Subject[]>([]);
+
+  const handleSave = async () => {
+    // Perform save logic here
+    console.log("Saving subjects:", currentSubjects);
+    // You can add API call or other save logic
+  };
+
   return (
     <div className="h-screen flex flex-col bg-brand-black-900 overflow-hidden">
       <MainNav />
@@ -27,7 +46,7 @@ export default function SubjectGradePage() {
 
           {/* 본문 */}
           <div className="flex gap-6 flex-1 min-h-0">
-            <SubjectGradeForm />
+            <SubjectGradeForm onChange={setCurrentSubjects} />
 
             {/* 우측 사이드바 */}
             <div className="flex flex-col gap-4 shrink-0" style={{ width: "360px" }}>
@@ -67,6 +86,7 @@ export default function SubjectGradePage() {
               <SaveButton
                 title="성적을 저장하시겠습니까?"
                 description="저장된 성적을 바탕으로 학습 플랜이 생성됩니다."
+                onSave={handleSave}
               />
             </div>
           </div>

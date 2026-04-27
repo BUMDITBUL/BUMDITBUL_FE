@@ -1,9 +1,14 @@
+"use client";
+
 import MainNav from "@/components/common/MainNav";
 import ExamRangeForm from "@/features/profile/components/ExamRangeForm";
 import SaveButton from "@/components/ui/SaveButton";
 import BackButton from "@/components/ui/BackButton";
 
 export default function ExamRangePage() {
+  const handleSave = async () => {
+    // TODO: integrate with ExamRangeForm data when onChange prop is wired
+  };
   return (
     <div className="h-screen flex flex-col bg-brand-black-900 overflow-hidden">
       <MainNav />
@@ -90,6 +95,7 @@ export default function ExamRangePage() {
               <SaveButton
                 title="시험 범위를 저장하시겠습니까?"
                 description="저장된 범위를 바탕으로 학습 플랜이 생성됩니다."
+                onSave={handleSave}
               />
             </div>
           </div>
