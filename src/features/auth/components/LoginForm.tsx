@@ -91,7 +91,7 @@ export default function LoginForm() {
           <span className="text-xs text-white/55">sns로 로그인</span>
           <div className="flex-1 h-px bg-white/55" />
         </div>
-        <Button variant="outline" fullWidth={false}>
+        <Button variant="outline">
           <Image src="/images/google.svg" alt="Google" width={16} height={16} style={{ width: 16, height: 16, flexShrink: 0 }} className="opacity-55" />
           Google
         </Button>
