@@ -1,3 +1,4 @@
+import Image from "next/image";
 import AuthNav from "@/components/common/AuthNav";
 
 export default function AuthLayout({
@@ -13,10 +14,14 @@ export default function AuthLayout({
 
         {/* 좌측: 배경 이미지 + 슬로건 */}
         <div className="relative w-1/2 overflow-hidden">
-          <img
+          <Image
             src="/images/auth-bg.jpg"
-            alt="background"
-            className="absolute inset-0 w-full h-full object-cover"
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="50vw"
+            priority
+            className="object-cover"
           />
           <div className="absolute inset-0 flex items-center justify-start pl-25">
             <h1
