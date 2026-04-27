@@ -91,16 +91,10 @@ export default function LoginForm() {
           <span className="text-xs text-white/55">sns로 로그인</span>
           <div className="flex-1 h-px bg-white/55" />
         </div>
-        <div className="flex gap-3">
-          <Button variant="outline" fullWidth={false}>
-            <Image src="/images/google.svg" alt="Google" width={16} height={16} style={{ width: 16, height: 16, flexShrink: 0 }} className="opacity-55" />
-            Google
-          </Button>
-          <Button variant="outline" fullWidth={false}>
-            <Image src="/images/apple.svg" alt="Apple" width={16} height={16} style={{ width: 16, height: 16, flexShrink: 0 }} className="opacity-55" />
-            Apple
-          </Button>
-        </div>
+        <Button variant="outline" fullWidth={false}>
+          <Image src="/images/google.svg" alt="Google" width={16} height={16} style={{ width: 16, height: 16, flexShrink: 0 }} className="opacity-55" />
+          Google
+        </Button>
       </div>
 
       {/* 하단 링크 */}
