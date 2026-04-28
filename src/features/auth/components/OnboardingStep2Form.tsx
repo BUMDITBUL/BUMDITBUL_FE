@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Button from "@/components/ui/button";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import { LONG_PRESS_DURATION, DELETE_ANIMATION_DURATION } from "@/constants/config";
@@ -21,6 +22,7 @@ type Subject = {
 };
 
 export default function OnboardingStep2Form() {
+  const router = useRouter();
   const [subjects, setSubjects] = useState<Subject[]>(
     DEFAULT_SUBJECTS.map((name, i) => ({
       id: i,
@@ -161,6 +163,8 @@ export default function OnboardingStep2Form() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // TODO: API 연동
+    router.push("/onboarding/step3");
   };
 
   const columns: Subject[][] = [];
@@ -321,12 +325,21 @@ export default function OnboardingStep2Form() {
         <p className="text-xs text-white/55">기본과목은 선택하지 않으면 자동으로 미입력 처리됩니다.</p>
       </div>
 
-      <Button type="submit" variant="primary">완료</Button>
+      <Button type="submit" variant="primary">다음으로</Button>
 
-      <p className="text-sm text-right">
-        <span className="text-white">2</span>
-        <span className="text-white/55">/2</span>
-      </p>
+      <div className="flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => router.push("/onboarding/step3")}
+          className="text-sm text-white/35 hover:text-white/60 transition-colors"
+        >
+          나중에 하기
+        </button>
+        <p className="text-sm">
+          <span className="text-white">2</span>
+          <span className="text-white/55">/3</span>
+        </p>
+      </div>
     </form>
   );
 }

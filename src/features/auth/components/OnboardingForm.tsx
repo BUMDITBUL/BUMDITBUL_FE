@@ -92,7 +92,7 @@ export default function OnboardingForm() {
       {/* 페이지 표시 */}
       <p className="text-sm text-right">
         <span className="text-white">1</span>
-        <span className="text-white/55">/2</span>
+        <span className="text-white/55">/3</span>
       </p>
     </div>
   );
