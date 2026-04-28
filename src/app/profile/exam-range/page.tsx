@@ -94,8 +94,9 @@ export default function ExamRangePage() {
 
               <SaveButton
                 title="시험 범위를 저장하시겠습니까?"
-                description="저장된 범위를 바탕으로 학습 플랜이 생성됩니다."
+                description="저장된 범위를 바탕으로 학습 플랜이 재생성됩니다."
                 onSave={handleSave}
+                withRegenLimit
               />
             </div>
           </div>

@@ -85,8 +85,9 @@ export default function SubjectGradePage() {
 
               <SaveButton
                 title="성적을 저장하시겠습니까?"
-                description="저장된 성적을 바탕으로 학습 플랜이 생성됩니다."
+                description="저장된 성적을 바탕으로 학습 플랜이 재생성됩니다."
                 onSave={handleSave}
+                withRegenLimit
               />
             </div>
           </div>
