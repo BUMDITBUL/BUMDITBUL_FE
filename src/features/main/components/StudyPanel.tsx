@@ -70,9 +70,20 @@ function CircleCheck({ checked }: { checked: boolean }) {
 interface StudyPanelProps {
   planStatus?: "setup" | "generating" | "error";
   userName?: string;
+  selectedDate?: Date;
 }
 
-export default function StudyPanel({ planStatus, userName }: StudyPanelProps = {}) {
+export default function StudyPanel({ planStatus, userName, selectedDate }: StudyPanelProps = {}) {
+  const today = new Date();
+  const isToday =
+    !selectedDate ||
+    (selectedDate.getFullYear() === today.getFullYear() &&
+      selectedDate.getMonth() === today.getMonth() &&
+      selectedDate.getDate() === today.getDate());
+
+  const panelTitle = isToday
+    ? "오늘 할 공부"
+    : `${selectedDate!.getMonth() + 1}월 ${selectedDate!.getDate()}일 할 공부`;
   const [items, setItems] = useState(initialItems);
   const [removingId, setRemovingId] = useState<number | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -224,7 +235,7 @@ export default function StudyPanel({ planStatus, userName }: StudyPanelProps = {
       className="flex flex-col gap-4 rounded-2xl p-6 shrink-0 h-full"
       style={{ width: "360px", background: "var(--color-surface)" }}
     >
-      <h2 className="text-white font-semibold text-base">오늘 할 공부</h2>
+      <h2 className="text-white font-semibold text-base">{panelTitle}</h2>
 
       <div className="flex flex-col gap-3 flex-1 overflow-y-auto">
         {items.map(item => {
