@@ -43,7 +43,6 @@ export const onboardingSchema = z.object({
     .min(1, '닉네임을 입력해주세요.')
     .regex(/^[가-힣]{2,5}$/, '닉네임은 2~5자 한글만 가능합니다.'),
   school: z.string().optional(),
-  schoolLevel: z.string(),
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;

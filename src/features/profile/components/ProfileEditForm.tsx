@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Button from "@/components/ui/button";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import { MOCK_USER } from "@/constants/mockData";
 
 const INPUT_STYLE = {
   height: "46px",
@@ -27,11 +28,11 @@ interface ProfileEditFormProps {
 }
 
 export default function ProfileEditForm({
-  initialNickname = "bbibbaroni",
-  initialSchool = "",
+  initialNickname = MOCK_USER.nickname,
+  initialSchool = MOCK_USER.school,
   initialProfileImage = null,
   onSave,
-}: ProfileEditFormProps) {
+}: ProfileEditFormProps = {}) {
   const [nickname, setNickname] = useState(initialNickname);
   const [school, setSchool] = useState(initialSchool);
   const [nicknameError, setNicknameError] = useState("");
@@ -39,8 +40,14 @@ export default function ProfileEditForm({
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialProfileImage);
   const [profileImage, setProfileImage] = useState<string | null>(initialProfileImage);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDeleteAccount = () => {
+    // TODO: 회원탈퇴 API 연동
+    setShowDeleteConfirm(false);
+  };
 
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -180,6 +187,28 @@ export default function ProfileEditForm({
               setShowConfirm(false);
             }}
             onCancel={() => setShowConfirm(false)}
+          />
+        )}
+
+        {/* 회원탈퇴 */}
+        <div className="pt-8 border-t border-white/10">
+          <button
+            type="button"
+            onClick={() => setShowDeleteConfirm(true)}
+            className="text-xs text-white/25 hover:text-brand-error/70 transition-colors"
+          >
+            회원탈퇴
+          </button>
+        </div>
+
+        {showDeleteConfirm && (
+          <ConfirmModal
+            title="정말 탈퇴하시겠습니까?"
+            description="탈퇴하면 모든 데이터가 삭제되며 복구할 수 없습니다."
+            confirmLabel="탈퇴하기"
+            cancelLabel="취소"
+            onConfirm={handleDeleteAccount}
+            onCancel={() => setShowDeleteConfirm(false)}
           />
         )}
 

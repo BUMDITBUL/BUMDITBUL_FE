@@ -51,7 +51,7 @@ export default function SubjectGradePage() {
             {/* 우측 사이드바 */}
             <div className="flex flex-col gap-4 shrink-0" style={{ width: "360px" }}>
               {/* 알림 사항 */}
-              <div className="rounded-2xl p-5 flex flex-col gap-4" style={{ background: "#2d2d2d" }}>
+              <div className="rounded-2xl p-5 flex flex-col gap-4" style={{ background: "var(--color-surface)" }}>
                 <div className="flex items-center gap-2">
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                     <circle cx="9" cy="9" r="7.5" stroke="#66bb6a" strokeWidth="1.3" />
@@ -85,8 +85,9 @@ export default function SubjectGradePage() {
 
               <SaveButton
                 title="성적을 저장하시겠습니까?"
-                description="저장된 성적을 바탕으로 학습 플랜이 생성됩니다."
+                description="저장된 성적을 바탕으로 학습 플랜이 재생성됩니다."
                 onSave={handleSave}
+                withRegenLimit
               />
             </div>
           </div>

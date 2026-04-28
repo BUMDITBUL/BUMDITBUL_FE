@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { LONG_PRESS_DURATION, DELETE_ANIMATION_DURATION } from "@/constants/config";
+import PlanStatusPanel from "@/components/ui/PlanStatusPanel";
 
 type SubItem = {
   id: number;
@@ -64,7 +67,23 @@ function CircleCheck({ checked }: { checked: boolean }) {
   );
 }
 
-export default function StudyPanel() {
+interface StudyPanelProps {
+  planStatus?: "setup" | "generating" | "error";
+  userName?: string;
+  selectedDate?: Date;
+}
+
+export default function StudyPanel({ planStatus, userName, selectedDate }: StudyPanelProps = {}) {
+  const today = new Date();
+  const isToday =
+    !selectedDate ||
+    (selectedDate.getFullYear() === today.getFullYear() &&
+      selectedDate.getMonth() === today.getMonth() &&
+      selectedDate.getDate() === today.getDate());
+
+  const panelTitle = isToday
+    ? "오늘 할 공부"
+    : `${selectedDate!.getMonth() + 1}월 ${selectedDate!.getDate()}일 할 공부`;
   const [items, setItems] = useState(initialItems);
   const [removingId, setRemovingId] = useState<number | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -109,8 +128,8 @@ export default function StudyPanel() {
         setItems(prev => prev.filter(i => i.id !== itemId));
         setRemovingId(null);
         isLongPress.current = false;
-      }, 200);
-    }, 500);
+      }, DELETE_ANIMATION_DURATION);
+    }, LONG_PRESS_DURATION);
   };
 
   const handleLongPressEnd = () => {
@@ -171,12 +190,52 @@ export default function StudyPanel() {
     pagesRefs.current.clear();
   };
 
+  if (planStatus === "setup") {
+    return (
+      <div
+        className="flex flex-col gap-5 items-center justify-center rounded-2xl shrink-0 h-full px-8 text-center"
+        style={{ width: "360px", background: "var(--color-surface)", border: "1px solid rgba(255,255,255,0.06)" }}
+      >
+        <div className="flex flex-col gap-1.5">
+          <p className="text-white font-semibold text-base">아직 일정이 없어요.</p>
+          <p className="text-white/45 text-sm leading-relaxed">
+            과목 성적과 시험 범위를 입력하면<br />맞춤 학습 일정을 만들어드려요.
+          </p>
+        </div>
+        <div className="w-full flex flex-col gap-2.5">
+          <Link
+            href="/profile/subject-grade"
+            className="w-full flex items-center justify-center text-sm text-white/70 hover:bg-white/5 transition-colors"
+            style={{ height: "46px", border: "1px solid rgba(255,255,255,0.25)", borderRadius: "14px" }}
+          >
+            과목별 성적 입력
+          </Link>
+          <Link
+            href="/profile/exam-range"
+            className="w-full flex items-center justify-center text-sm font-medium text-white hover:opacity-90 transition-opacity bg-brand-green-400"
+            style={{ height: "46px", borderRadius: "14px" }}
+          >
+            일정 생성하기
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (planStatus === "generating" || planStatus === "error") {
+    return (
+      <div className="flex flex-col shrink-0 h-full" style={{ width: "360px" }}>
+        <PlanStatusPanel status={planStatus} userName={userName} />
+      </div>
+    );
+  }
+
   return (
     <div
       className="flex flex-col gap-4 rounded-2xl p-6 shrink-0 h-full"
-      style={{ width: "360px", background: "#2d2d2d" }}
+      style={{ width: "360px", background: "var(--color-surface)" }}
     >
-      <h2 className="text-white font-semibold text-base">오늘 할 공부</h2>
+      <h2 className="text-white font-semibold text-base">{panelTitle}</h2>
 
       <div className="flex flex-col gap-3 flex-1 overflow-y-auto">
         {items.map(item => {
@@ -185,7 +244,7 @@ export default function StudyPanel() {
             <div
               key={item.id}
               className="flex flex-col rounded-xl px-4 py-3 gap-2.5 transition-opacity duration-200 select-none"
-              style={{ background: "#3a3a3a", opacity: removingId === item.id ? 0 : 1 }}
+              style={{ background: "var(--color-surface-elevated)", opacity: removingId === item.id ? 0 : 1 }}
               onPointerDown={() => handleLongPressStart(item.id)}
               onPointerUp={handleLongPressEnd}
               onPointerLeave={handleLongPressEnd}
@@ -229,7 +288,7 @@ export default function StudyPanel() {
         {isAdding && (
           <div
             className="flex flex-col rounded-xl px-4 py-3 gap-2.5"
-            style={{ background: "#3a3a3a" }}
+            style={{ background: "var(--color-surface-elevated)" }}
           >
             <div className="flex items-center justify-between">
               <input

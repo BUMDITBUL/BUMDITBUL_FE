@@ -53,12 +53,28 @@ export default function SignupForm() {
         {/* 이메일 */}
         <div className="flex flex-col gap-2">
           <label className="text-white/55 text-sm font-medium">이메일</label>
-          <Input
-            type="email"
-            placeholder="이메일을 입력해주세요."
-            error={!!errors.email}
-            {...register('email')}
-          />
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Input
+                type="email"
+                placeholder="이메일을 입력해주세요."
+                error={!!errors.email}
+                {...register('email')}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleSendCode}
+              className="shrink-0 px-5 text-white/55 text-sm transition-colors hover:bg-white/5"
+              style={{
+                height: "46px",
+                border: "1px solid rgba(255, 255, 255, 0.55)",
+                borderRadius: "14px",
+              }}
+            >
+              전송
+            </button>
+          </div>
           {errors.email && <ErrorMessage message={errors.email.message!} />}
         </div>
 
@@ -144,27 +160,8 @@ export default function SignupForm() {
           </div>
         </div>
 
-        <Button type="submit" variant="primary">회원가입</Button>
+        <Button type="submit" variant="primary" className="mt-4">회원가입</Button>
       </form>
-
-      {/* SNS 로그인 */}
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-3">
-          <div className="flex-1 h-px bg-white/55" />
-          <span className="text-xs text-white/55">sns로 로그인</span>
-          <div className="flex-1 h-px bg-white/55" />
-        </div>
-        <div className="flex gap-3">
-          <Button variant="outline" fullWidth={false}>
-            <Image src="/images/google.svg" alt="Google" width={16} height={16} style={{ width: 16, height: 16, flexShrink: 0 }} className="opacity-55" />
-            Google
-          </Button>
-          <Button variant="outline" fullWidth={false}>
-            <Image src="/images/apple.svg" alt="Apple" width={16} height={16} style={{ width: 16, height: 16, flexShrink: 0 }} className="opacity-55" />
-            Apple
-          </Button>
-        </div>
-      </div>
 
       {/* 하단 링크 */}
       <p className="text-sm text-white/55">

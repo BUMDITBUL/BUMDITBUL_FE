@@ -12,7 +12,12 @@ function getFirstDayOfMonth(year: number, month: number) {
   return new Date(year, month, 1).getDay();
 }
 
-export default function MainCalendar() {
+interface MainCalendarProps {
+  selectedDay?: Date;
+  onDaySelect?: (date: Date) => void;
+}
+
+export default function MainCalendar({ selectedDay: selectedDayProp, onDaySelect }: MainCalendarProps = {}) {
   const today = new Date();
   const todayY = today.getFullYear();
   const todayM = today.getMonth();
@@ -20,7 +25,9 @@ export default function MainCalendar() {
 
   const [viewYear, setViewYear] = useState(todayY);
   const [viewMonth, setViewMonth] = useState(todayM);
-  const [selectedDay, setSelectedDay] = useState(new Date(todayY, todayM, todayD));
+  const [internalDay, setInternalDay] = useState(new Date(todayY, todayM, todayD));
+
+  const selectedDay = selectedDayProp ?? internalDay;
 
   const daysInMonth = getDaysInMonth(viewYear, viewMonth);
   const firstDay = getFirstDayOfMonth(viewYear, viewMonth);
@@ -98,7 +105,12 @@ export default function MainCalendar() {
               return (
                 <div key={ci} className="flex items-center justify-center">
                   <button
-                    onClick={() => cell.type === "current" && setSelectedDay(new Date(viewYear, viewMonth, cell.day))}
+                    onClick={() => {
+                      if (cell.type !== "current") return;
+                      const date = new Date(viewYear, viewMonth, cell.day);
+                      if (onDaySelect) onDaySelect(date);
+                      else setInternalDay(date);
+                    }}
                     disabled={cell.type !== "current"}
                     className={[
                       "w-10 h-10 rounded-full flex items-center justify-center text-sm transition-colors",

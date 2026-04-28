@@ -1,10 +1,10 @@
 import Image from "next/image";
-import { EXAM_DATE } from "../constants";
+import { EXAM_DATE, MS_PER_DAY } from "@/constants/config";
 
 function getDdayLabel(examDate: Date) {
   const today = new Date();
-  const exam = examDate;
-  const diff = Math.ceil((exam.getTime() - new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()) / 86400000);
+  const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const diff = Math.ceil((examDate.getTime() - todayMidnight.getTime()) / MS_PER_DAY);
   return diff > 0 ? `D-${diff}` : diff === 0 ? "D-Day" : `D+${Math.abs(diff)}`;
 }
 

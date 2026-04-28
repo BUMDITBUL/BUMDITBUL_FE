@@ -43,7 +43,7 @@ export default function ExamRangePage() {
               {/* 알림 사항 */}
               <div
                 className="rounded-2xl p-5 flex flex-col gap-4"
-                style={{ background: "#2d2d2d" }}
+                style={{ background: "var(--color-surface)" }}
               >
                 <div className="flex items-center gap-2">
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -94,8 +94,9 @@ export default function ExamRangePage() {
 
               <SaveButton
                 title="시험 범위를 저장하시겠습니까?"
-                description="저장된 범위를 바탕으로 학습 플랜이 생성됩니다."
+                description="저장된 범위를 바탕으로 학습 플랜이 재생성됩니다."
                 onSave={handleSave}
+                withRegenLimit
               />
             </div>
           </div>
