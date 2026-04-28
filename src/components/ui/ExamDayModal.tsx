@@ -15,19 +15,15 @@ function isExamDay(examDate: Date) {
   );
 }
 
-export default function ExamDayModal({ examDate = EXAM_DATE }: { examDate?: Date }) {
-  const [open, setOpen] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+function shouldShow(examDate: Date) {
+  if (!isExamDay(examDate)) return false;
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem(STORAGE_KEY) !== new Date().toDateString();
+}
 
-  useEffect(() => {
-    // TODO: 확인 후 아래 줄 제거하고 주석 해제
-    setOpen(true);
-    // if (!isExamDay(examDate)) return;
-    // const shown = localStorage.getItem(STORAGE_KEY);
-    // const today = new Date().toDateString();
-    // if (shown === today) return;
-    // setOpen(true);
-  }, [examDate]);
+export default function ExamDayModal({ examDate = EXAM_DATE }: { examDate?: Date }) {
+  const [open, setOpen] = useState(() => shouldShow(examDate));
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (open) buttonRef.current?.focus();

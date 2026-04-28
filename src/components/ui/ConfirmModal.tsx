@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 
 interface ConfirmModalProps {
   title: string;
@@ -21,8 +21,9 @@ export default function ConfirmModal({
   onCancel,
 }: ConfirmModalProps) {
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
-  const titleId = useRef(`modal-title-${Math.random().toString(36).substr(2, 9)}`);
-  const descId = useRef(`modal-desc-${Math.random().toString(36).substr(2, 9)}`);
+  const id = useId();
+  const titleId = `modal-title-${id}`;
+  const descId = `modal-desc-${id}`;
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -62,16 +63,16 @@ export default function ConfirmModal({
       <div
         role="dialog"
         aria-modal="true"
-        aria-labelledby={titleId.current}
-        aria-describedby={description ? descId.current : undefined}
+        aria-labelledby={titleId}
+        aria-describedby={description ? descId : undefined}
         className="flex flex-col gap-6 rounded-2xl p-8 w-full"
         style={{ maxWidth: "380px", background: "var(--color-surface)" }}
         onClick={e => e.stopPropagation()}
       >
         <div className="flex flex-col gap-2">
-          <h2 id={titleId.current} className="text-white font-bold text-lg">{title}</h2>
+          <h2 id={titleId} className="text-white font-bold text-lg">{title}</h2>
           {description && (
-            <p id={descId.current} className="text-white/50 text-sm leading-relaxed">{description}</p>
+            <p id={descId} className="text-white/50 text-sm leading-relaxed">{description}</p>
           )}
         </div>
 
