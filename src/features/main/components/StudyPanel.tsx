@@ -261,7 +261,8 @@ export default function StudyPanel({ planStatus, userName, selectedDate }: Study
                     alt={allDone ? "완료" : "미완료"}
                     width={20}
                     height={20}
-                  />
+              unoptimized
+            />
                 </button>
               </div>
               <div className="flex flex-col gap-1.5 pl-0.5">
@@ -348,7 +349,9 @@ export default function StudyPanel({ planStatus, userName, selectedDate }: Study
 
       <div className="flex justify-end">
         <button onClick={startAdding} className="hover:opacity-70 transition-opacity">
-          <Image src="/images/icon/plus.svg" alt="추가" width={24} height={24} />
+          <Image src="/images/icon/plus.svg" alt="추가" width={24} height={24}
+              unoptimized
+            />
         </button>
       </div>
     </div>

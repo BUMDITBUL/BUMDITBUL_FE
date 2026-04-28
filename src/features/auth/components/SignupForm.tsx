@@ -127,7 +127,8 @@ export default function SignupForm() {
                     width={20}
                     height={20}
                     className="opacity-55"
-                  />
+              unoptimized
+            />
                 </button>
               }
             />
@@ -152,7 +153,8 @@ export default function SignupForm() {
                     width={20}
                     height={20}
                     className="opacity-55"
-                  />
+              unoptimized
+            />
                 </button>
               }
             />

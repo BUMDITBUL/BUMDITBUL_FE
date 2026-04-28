@@ -494,7 +494,8 @@ export default function ExamRangeForm() {
                 src="/images/icon/school-toggle.svg"
                 alt="열기" width={16} height={16}
                 className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none"
-              />
+              unoptimized
+            />
             </div>
           </div>
 

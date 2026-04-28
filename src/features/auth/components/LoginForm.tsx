@@ -72,7 +72,8 @@ export default function LoginForm() {
                   width={20}
                   height={20}
                   className="opacity-55"
-                />
+              unoptimized
+            />
               </button>
             }
           />
@@ -92,7 +93,9 @@ export default function LoginForm() {
           <div className="flex-1 h-px bg-white/55" />
         </div>
         <Button variant="outline">
-          <Image src="/images/google.svg" alt="Google" width={16} height={16} style={{ width: 16, height: 16, flexShrink: 0 }} className="opacity-55" />
+          <Image src="/images/google.svg" alt="Google" width={16} height={16} style={{ width: 16, height: 16, flexShrink: 0 }} className="opacity-55"
+              unoptimized
+            />
           Google
         </Button>
       </div>
