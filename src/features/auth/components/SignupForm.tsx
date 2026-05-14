@@ -3,33 +3,121 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signupSchema, type SignupFormValues } from '@/features/auth/schemas/auth.schema';
+import { sendEmail, signup, verifyEmail } from '@/features/auth/api/auth.api';
+import { ApiError } from '@/lib/api';
+import { saveAuthTokens } from '@/lib/authTokens';
 import ErrorMessage from '@/components/ui/ErrorMessage';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/button';
 
 export default function SignupForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
+  const [sendCodeMessage, setSendCodeMessage] = useState<string | null>(null);
+  const [sendCodeError, setSendCodeError] = useState<string | null>(null);
+  const [verifyCodeMessage, setVerifyCodeMessage] = useState<string | null>(null);
+  const [verifyCodeError, setVerifyCodeError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    getValues,
+    trigger,
+    formState: { errors, isSubmitting },
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
   });
 
-  const onSubmit = (data: SignupFormValues) => {
-    // TODO: API 연동
-    console.log(data);
+  const onSubmit = async (data: SignupFormValues) => {
+    if (!isEmailVerified) {
+      setSubmitError('이메일 인증을 완료해주세요.');
+      return;
+    }
+
+    setSubmitError(null);
+
+    try {
+      const tokens = await signup({ email: data.email, password: data.password });
+      saveAuthTokens(tokens);
+      router.push('/onboarding');
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 409) {
+        setSubmitError('이미 가입된 이메일입니다.');
+        return;
+      }
+      setSubmitError(error instanceof Error ? error.message : '회원가입 중 오류가 발생했습니다.');
+    }
   };
 
-  const handleSendCode = () => {
-    setCodeSent(true);
+  const handleSendCode = async () => {
+    const isEmailValid = await trigger('email');
+
+    if (!isEmailValid) {
+      return;
+    }
+
+    setIsSendingCode(true);
+    setSendCodeMessage(null);
+    setSendCodeError(null);
+    setVerifyCodeMessage(null);
+    setVerifyCodeError(null);
+
+    try {
+      const response = await sendEmail(getValues('email'));
+
+      if (response.isDuplicate) {
+        setCodeSent(false);
+        setSendCodeError('이미 가입된 이메일입니다.');
+        return;
+      }
+
+      setCodeSent(true);
+      setSendCodeMessage(response.message || '입력하신 이메일로 인증번호를 전송했어요.');
+    } catch (error) {
+      setCodeSent(false);
+      setSendCodeError(error instanceof Error ? error.message : '인증번호 전송 중 오류가 발생했습니다.');
+    } finally {
+      setIsSendingCode(false);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    const isEmailValid = await trigger('email');
+    const isCodeValid = await trigger('verificationCode');
+
+    if (!isEmailValid || !isCodeValid) {
+      return;
+    }
+
+    setIsVerifyingCode(true);
+    setVerifyCodeMessage(null);
+    setVerifyCodeError(null);
+
+    try {
+      const response = await verifyEmail(getValues('email'), getValues('verificationCode'));
+
+      if (!response.verified) {
+        setVerifyCodeError('인증번호가 일치하지 않습니다.');
+        return;
+      }
+
+      setIsEmailVerified(true);
+      setVerifyCodeMessage('이메일 인증이 완료되었어요.');
+    } catch (error) {
+      setVerifyCodeError(error instanceof Error ? error.message : '인증번호 확인 중 오류가 발생했습니다.');
+    } finally {
+      setIsVerifyingCode(false);
+    }
   };
 
   return (
@@ -65,6 +153,7 @@ export default function SignupForm() {
             <button
               type="button"
               onClick={handleSendCode}
+              disabled={isSendingCode}
               className="shrink-0 px-5 text-white/55 text-sm transition-colors hover:bg-white/5"
               style={{
                 height: "46px",
@@ -72,10 +161,11 @@ export default function SignupForm() {
                 borderRadius: "14px",
               }}
             >
-              전송
+              {isSendingCode ? '전송 중' : '전송'}
             </button>
           </div>
           {errors.email && <ErrorMessage message={errors.email.message!} />}
+          {sendCodeError && <ErrorMessage message={sendCodeError} />}
         </div>
 
         {/* 인증번호 */}
@@ -92,7 +182,8 @@ export default function SignupForm() {
               </div>
               <button
                 type="button"
-                onClick={handleSendCode}
+                onClick={handleVerifyCode}
+                disabled={isVerifyingCode}
                 className="shrink-0 px-5 text-white/55 text-sm transition-colors hover:bg-white/5"
                 style={{
                   height: "46px",
@@ -100,13 +191,15 @@ export default function SignupForm() {
                   borderRadius: "14px",
                 }}
               >
-                확인
+                {isVerifyingCode ? '확인 중' : '확인'}
               </button>
             </div>
-            {codeSent && !errors.verificationCode && (
-              <p className="text-xs text-white/55">입력하신 이메일로 인증번호를 전송했어요.</p>
+            {codeSent && sendCodeMessage && !errors.verificationCode && (
+              <p className="text-xs text-white/55">{sendCodeMessage}</p>
             )}
             {errors.verificationCode && <ErrorMessage message={errors.verificationCode.message!} />}
+            {verifyCodeMessage && <p className="text-xs text-brand-green-200">{verifyCodeMessage}</p>}
+            {verifyCodeError && <ErrorMessage message={verifyCodeError} />}
           </div>
         </div>
 
@@ -162,7 +255,11 @@ export default function SignupForm() {
           </div>
         </div>
 
-        <Button type="submit" variant="primary" className="mt-4">회원가입</Button>
+        {submitError && <ErrorMessage message={submitError} />}
+
+        <Button type="submit" variant="primary" className="mt-4" disabled={isSubmitting}>
+          {isSubmitting ? '가입 중...' : '회원가입'}
+        </Button>
       </form>
 
       {/* 하단 링크 */}
