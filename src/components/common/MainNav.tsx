@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function MainNav() {
   return (
     <nav className="flex items-center justify-between px-10 py-3 shrink-0 border-b border-white/10">
-      <Link href="/">
+      <Link href="/main">
         <Image src="/images/logo.svg" alt="범딧불" width={32} height={32} />
       </Link>
       <Link href="/profile" className="w-7 h-7 rounded-full overflow-hidden block">
