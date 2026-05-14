@@ -1,12 +1,23 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/button";
 import ExamRangeForm from "@/features/profile/components/ExamRangeForm";
 
 export default function OnboardingStep3Form() {
   const router = useRouter();
+  const [initialSubjectNames, setInitialSubjectNames] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("bumditbul.onboardingSubjects");
+      setInitialSubjectNames(stored ? JSON.parse(stored) : []);
+    } catch {
+      setInitialSubjectNames([]);
+    }
+  }, []);
 
   const handleComplete = () => {
     // TODO: API 연동
@@ -28,7 +39,12 @@ export default function OnboardingStep3Form() {
       </div>
 
       {/* 시험범위 폼 */}
-      <ExamRangeForm />
+      {initialSubjectNames !== null && (
+        <ExamRangeForm
+          key={initialSubjectNames.join(",")}
+          initialSubjectNames={initialSubjectNames}
+        />
+      )}
 
       {/* 완료 버튼 + 페이지 표시 */}
       <div className="flex flex-col gap-1 shrink-0">

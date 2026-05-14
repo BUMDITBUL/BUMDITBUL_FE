@@ -163,6 +163,8 @@ export default function OnboardingStep2Form() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const names = subjects.map(s => s.name.trim()).filter(Boolean);
+    localStorage.setItem("bumditbul.onboardingSubjects", JSON.stringify(names));
     // TODO: API 연동
     router.push("/onboarding/step3");
   };

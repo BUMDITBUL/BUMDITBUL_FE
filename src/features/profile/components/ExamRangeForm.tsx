@@ -27,6 +27,20 @@ const DEFAULT_SUBJECTS: Subject[] = [
   { id: 0, name: "", startPage: "", endPage: "", date: "", difficulty: "중", materials: [], nameEdited: false },
 ];
 
+function buildInitialSubjects(names: string[]): Subject[] {
+  if (names.length === 0) return DEFAULT_SUBJECTS;
+  return names.map((name, i) => ({
+    id: i,
+    name,
+    startPage: "",
+    endPage: "",
+    date: "",
+    difficulty: "중" as Difficulty,
+    materials: [],
+    nameEdited: true,
+  }));
+}
+
 const INPUT_BASE: React.CSSProperties = {
   height: "42px",
   border: "1px solid rgba(255, 255, 255, 0.2)",
@@ -276,10 +290,17 @@ function MaterialTagInput({ tags, onChange }: { tags: string[]; onChange: (tags:
   );
 }
 
+type ExamRangeFormProps = {
+  initialSubjectNames?: string[];
+};
+
 // 메인 폼
-export default function ExamRangeForm() {
-  const [subjects, setSubjects] = useState<Subject[]>(DEFAULT_SUBJECTS);
-  const [inputWidths, setInputWidths] = useState<Record<number, number>>({ 0: getNameWidth("") });
+export default function ExamRangeForm({ initialSubjectNames = [] }: ExamRangeFormProps) {
+  const initial = buildInitialSubjects(initialSubjectNames);
+  const [subjects, setSubjects] = useState<Subject[]>(initial);
+  const [inputWidths, setInputWidths] = useState<Record<number, number>>(
+    () => Object.fromEntries(initial.map(s => [s.id, getNameWidth(s.name)]))
+  );
   const [maxReached, setMaxReached] = useState(false);
   const [duplicateError, setDuplicateError] = useState(false);
   const [removingId, setRemovingId] = useState<number | null>(null);
@@ -287,12 +308,14 @@ export default function ExamRangeForm() {
   const [focusedNameId, setFocusedNameId] = useState<number | null>(null);
   const [openPickerId, setOpenPickerId] = useState<number | null>(null);
 
-  const subjectIdCounter = useRef(1);
+  const subjectIdCounter = useRef(initial.length || 1);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const removeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLongPress = useRef(false);
   const nameRefs = useRef<Record<number, HTMLInputElement | null>>({});
-  const prevNames = useRef<Record<string | number, string>>({ 0: "" });
+  const prevNames = useRef<Record<string | number, string>>(
+    Object.fromEntries(initial.map(s => [s.id, s.name]))
+  );
 
   const handleNameChange = (index: number, value: string) => {
     const id = subjects[index].id;
