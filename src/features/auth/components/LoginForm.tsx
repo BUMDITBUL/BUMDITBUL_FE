@@ -2,29 +2,64 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginFormValues } from "@/features/auth/schemas/auth.schema";
+import { googleLogin, login } from "@/features/auth/api/auth.api";
+import { ApiError } from "@/lib/api";
+import { saveAuthTokens } from "@/lib/authTokens";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/button";
+import GoogleLoginButton from "@/features/auth/components/GoogleLoginButton";
 
 export default function LoginForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    // TODO: API 연동
-    console.log(data);
+  const onSubmit = async (data: LoginFormValues) => {
+    setSubmitError(null);
+
+    try {
+      const tokens = await login(data);
+      saveAuthTokens(tokens);
+      router.push("/main");
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        setSubmitError("이메일 또는 비밀번호를 확인해주세요.");
+        return;
+      }
+
+      setSubmitError(error instanceof Error ? error.message : "로그인 중 오류가 발생했습니다.");
+    }
   };
+
+  const handleGoogleCredential = useCallback(async (idToken: string) => {
+    setSubmitError(null);
+    setIsGoogleSubmitting(true);
+
+    try {
+      const tokens = await googleLogin(idToken);
+      saveAuthTokens(tokens);
+      router.push("/main");
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Google 로그인 중 오류가 발생했습니다.");
+    } finally {
+      setIsGoogleSubmitting(false);
+    }
+  }, [router]);
 
   return (
     <div className="w-full flex flex-col gap-6">
@@ -80,8 +115,10 @@ export default function LoginForm() {
           {errors.password && <ErrorMessage message={errors.password.message!} />}
         </div>
 
-        <Button type="submit" variant="primary">
-          로그인
+        {submitError && <ErrorMessage message={submitError} />}
+
+        <Button type="submit" variant="primary" disabled={isSubmitting}>
+          {isSubmitting ? "로그인 중..." : "로그인"}
         </Button>
       </form>
 
@@ -92,12 +129,8 @@ export default function LoginForm() {
           <span className="text-xs text-white/55">sns로 시작하기</span>
           <div className="flex-1 h-px bg-white/55" />
         </div>
-        <Button variant="outline">
-          <Image src="/images/google.svg" alt="Google" width={16} height={16} style={{ width: 16, height: 16, flexShrink: 0 }} className="opacity-55"
-              unoptimized
-            />
-          Google
-        </Button>
+        <GoogleLoginButton onCredential={handleGoogleCredential} />
+        {isGoogleSubmitting && <p className="text-center text-xs text-white/55">Google 로그인 중...</p>}
       </div>
 
       {/* 하단 링크 */}
