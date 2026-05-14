@@ -3,8 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { MOCK_USER } from "@/constants/mockData";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import { logout } from "@/features/auth/api/auth.api";
+import { clearAuthTokens, getRefreshToken } from "@/lib/authTokens";
 
 function PencilIcon() {
   return (
@@ -45,11 +48,20 @@ interface ProfileSidebarProps {
 }
 
 export default function ProfileSidebar({ username = MOCK_USER.nickname, handle = MOCK_USER.nickname }: ProfileSidebarProps) {
+  const router = useRouter();
   const [showLogout, setShowLogout] = useState(false);
 
-  const handleLogout = () => {
-    // TODO: 로그아웃 API 연동
+  const handleLogout = async () => {
     setShowLogout(false);
+    try {
+      const refreshToken = getRefreshToken();
+      if (refreshToken) await logout({ refreshToken });
+    } catch {
+      // 실패해도 토큰 삭제 후 이동
+    } finally {
+      clearAuthTokens();
+      router.push("/login");
+    }
   };
 
   return (

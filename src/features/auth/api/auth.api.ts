@@ -58,3 +58,17 @@ export function googleLogin(idToken: string) {
     body: { idToken },
   });
 }
+
+export function logout(payload: { refreshToken: string }) {
+  return apiRequest<{ message: string }>("/auth/logout", {
+    method: "POST",
+    body: payload,
+  });
+}
+
+export function withdraw(accessToken: string | null) {
+  return apiRequest<{ message: string }>("/auth/withdraw", {
+    method: "DELETE",
+    accessToken,
+  });
+}

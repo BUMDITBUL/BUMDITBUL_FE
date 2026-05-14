@@ -2,9 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import Button from "@/components/ui/button";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import { MOCK_USER } from "@/constants/mockData";
+import { withdraw } from "@/features/auth/api/auth.api";
+import { clearAuthTokens, getAccessToken } from "@/lib/authTokens";
 
 const INPUT_STYLE = {
   height: "46px",
@@ -33,6 +36,7 @@ export default function ProfileEditForm({
   initialProfileImage = null,
   onSave,
 }: ProfileEditFormProps = {}) {
+  const router = useRouter();
   const [nickname, setNickname] = useState(initialNickname);
   const [school, setSchool] = useState(initialSchool);
   const [nicknameError, setNicknameError] = useState("");
@@ -44,9 +48,16 @@ export default function ProfileEditForm({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleDeleteAccount = () => {
-    // TODO: 회원탈퇴 API 연동
+  const handleDeleteAccount = async () => {
     setShowDeleteConfirm(false);
+    try {
+      await withdraw(getAccessToken());
+    } catch {
+      // 실패해도 토큰 삭제 후 이동
+    } finally {
+      clearAuthTokens();
+      router.push("/login");
+    }
   };
 
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
