@@ -8,6 +8,9 @@ import { useRouter } from "next/navigation";
 import { onboardingSchema, type OnboardingFormValues } from "@/features/auth/schemas/auth.schema";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/button";
+import ErrorMessage from "@/components/ui/ErrorMessage";
+import { updateOnboardingProfile } from "@/features/auth/api/onboarding.api";
+import { getAccessToken } from "@/lib/authTokens";
 
 type School = {
   SCHUL_NM: string;
@@ -51,21 +54,31 @@ export default function OnboardingForm() {
   const [isSearchingSchool, setIsSearchingSchool] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingSchema),
   });
 
   const schoolValue = watch("school");
 
-  const onSubmit = (_data: OnboardingFormValues) => {
-    // TODO: API 연동
-    router.push("/onboarding/step2");
+  const onSubmit = async (data: OnboardingFormValues) => {
+    setSubmitError(null);
+    try {
+      await updateOnboardingProfile(
+        { nickname: data.nickname, school: data.school ?? "" },
+        getAccessToken()
+      );
+      router.push("/onboarding/step2");
+    } catch {
+      setSubmitError("저장 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
   };
 
   const handleSchoolSearch = async () => {
@@ -229,8 +242,10 @@ export default function OnboardingForm() {
           범딧불을 이용 하시기 전에 미리 확인할 내용이 남아 있어요.
         </p>
 
-        <Button type="submit" variant="primary">
-          다음으로
+        {submitError && <ErrorMessage message={submitError} />}
+
+        <Button type="submit" variant="primary" disabled={isSubmitting}>
+          {isSubmitting ? "저장 중..." : "다음으로"}
         </Button>
       </form>
 

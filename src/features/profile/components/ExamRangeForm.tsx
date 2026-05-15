@@ -290,12 +290,21 @@ function MaterialTagInput({ tags, onChange }: { tags: string[]; onChange: (tags:
   );
 }
 
+export type ExamSubjectData = {
+  name: string;
+  startPage: string;
+  endPage: string;
+  date: string;
+  difficulty: Difficulty;
+};
+
 type ExamRangeFormProps = {
   initialSubjectNames?: string[];
+  onChange?: (subjects: ExamSubjectData[]) => void;
 };
 
 // 메인 폼
-export default function ExamRangeForm({ initialSubjectNames = [] }: ExamRangeFormProps) {
+export default function ExamRangeForm({ initialSubjectNames = [], onChange }: ExamRangeFormProps) {
   const initial = buildInitialSubjects(initialSubjectNames);
   const [subjects, setSubjects] = useState<Subject[]>(initial);
   const [inputWidths, setInputWidths] = useState<Record<number, number>>(
@@ -381,6 +390,16 @@ export default function ExamRangeForm({ initialSubjectNames = [] }: ExamRangeFor
       if (removeTimerRef.current) clearTimeout(removeTimerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    onChange?.(subjects.map(s => ({
+      name: s.name,
+      startPage: s.startPage,
+      endPage: s.endPage,
+      date: s.date,
+      difficulty: s.difficulty,
+    })));
+  }, [subjects, onChange]);
 
   const handleAdd = () => {
     if (subjects.length >= MAX_SUBJECTS) { setMaxReached(true); return; }
